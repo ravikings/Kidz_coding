@@ -29,6 +29,9 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+        with:
+          # Auto-enable Pages (with GitHub Actions as source) on first run.
+          enablement: true
 
       # Publish only the app folder so index.html sits at the site root.
       - name: Upload site artifact
