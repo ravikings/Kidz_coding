@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kidz Java Coding Lab 🚀 | Fun Java Coding for Kids (Ages 5+)</title>
+<meta name="description" content="A free, safe, offline coding app that teaches real Java to kids ages 5 and up. 100 bite-sized lessons with instant feedback, progress saving, and a kid-friendly code editor. No sign-up, no ads." />
+<meta name="keywords" content="coding for kids, learn java for kids, kids programming, teach kids to code, java lessons for beginners, coding app for children, free coding for kids, homeschool coding, STEM for kids" />
+<meta name="author" content="Kidz Java Coding Lab" />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#4c6ef5" />
+<link rel="canonical" href="https://ravikings.github.io/Kidz_coding/" />
+
+<!-- Open Graph / social sharing -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Kidz Java Coding Lab 🚀 | Fun Java Coding for Kids" />
+<meta property="og:description" content="Teach your child real Java through 100 tiny, playful lessons. Free, offline, and safe — no ads, no sign-up." />
+<meta property="og:url" content="https://ravikings.github.io/Kidz_coding/" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Kidz Java Coding Lab 🚀 | Fun Java Coding for Kids" />
+<meta name="twitter:description" content="Teach your child real Java through 100 tiny, playful lessons. Free, offline, and safe." />
+
+<!-- Structured data for rich search results -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "name": "Kidz Java Coding Lab",
+  "description": "A free, offline app that teaches real Java to children ages 5+ through 100 bite-sized, interactive lessons.",
+  "url": "https://ravikings.github.io/Kidz_coding/",
+  "educationalLevel": "Beginner",
+  "learningResourceType": "Interactive coding course",
+  "teaches": "Java programming",
+  "typicalAgeRange": "5-14",
+  "isAccessibleForFree": true,
+  "inLanguage": "en"
+}
+</script>
+<style>
+  :root {
+    --bg: #f3f7ff;
+    --panel: #ffffff;
+    --ink: #1f2a44;
+    --accent: #4c6ef5;
+    --accent-dark: #3b5bdb;
+    --good: #2f9e44;
+    --good-dark: #2b8a3e;
+    --warn: #e8590c;
+    --lock: #adb5bd;
+    --console-bg: #10233b;
+    --console-ink: #b3f5c8;
+    --code-font: "Fira Mono", "Consolas", "Courier New", monospace;
+    --ui-font: "Comic Sans MS", "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--ui-font);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 20px;
+    line-height: 1.4;
+  }
+  header {
+    background: linear-gradient(90deg, #4c6ef5, #7048e8);
+    color: #fff;
+    padding: 16px 24px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  }
+  header h1 { margin: 0; font-size: 34px; letter-spacing: 0.5px; }
+  header p { margin: 6px 0 0; font-size: 18px; opacity: 0.95; }
+
+  .layout {
+    display: flex;
+    gap: 18px;
+    padding: 18px;
+    align-items: stretch;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  .panel {
+    background: var(--panel);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 4px 14px rgba(31,42,68,0.08);
+  }
+  .left { flex: 1.15; min-width: 0; }
+  .right { flex: 0.85; min-width: 0; display: flex; flex-direction: column; }
+
+  h2 { font-size: 24px; margin: 0 0 12px; color: var(--accent-dark); }
+
+  /* Level selector */
+  .level-selector { margin-bottom: 18px; }
+  .level-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 8px;
+    background: #eef2ff;
+    border-radius: 12px;
+    border: 2px solid #dbe4ff;
+  }
+  .lvl-btn {
+    font-family: var(--ui-font);
+    font-size: 15px;
+    font-weight: bold;
+    padding: 8px 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #d0ebff;
+    color: #1c4a8a;
+    transition: transform 0.06s ease, box-shadow 0.1s ease;
+    position: relative;
+  }
+  .lvl-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
+  .lvl-btn.completed { background: var(--good); color: #fff; }
+  .lvl-btn.current { outline: 4px solid #ffd43b; z-index: 1; }
+  .lvl-btn.locked { background: #e9ecef; color: var(--lock); cursor: not-allowed; }
+  .lvl-btn .badge { font-size: 11px; position: absolute; top: 1px; right: 4px; }
+
+  .progress-line { margin-top: 10px; font-size: 17px; color: #495057; text-align: center; }
+  .jump-row { margin-top: 8px; text-align: center; font-size: 15px; color: #495057; }
+  .jump-row input {
+    width: 80px; font-size: 16px; padding: 6px 8px; text-align: center;
+    border: 2px solid #bac8ff; border-radius: 8px; font-family: var(--code-font);
+  }
+
+  /* Lesson */
+  .lesson-title { font-size: 26px; color: var(--accent-dark); margin: 4px 0 8px; }
+  .instruction {
+    background: #fff9db;
+    border: 2px dashed #ffe066;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 21px;
+    margin-bottom: 16px;
+  }
+  .instruction b { color: var(--warn); }
+
+  /* Snippet palette */
+  .snips { margin-bottom: 10px; }
+  .snips-label { font-size: 16px; color: #868e96; margin-bottom: 6px; }
+  .snip-btn {
+    font-family: var(--code-font);
+    font-size: 16px;
+    background: #e7f5ff;
+    color: #1864ab;
+    border: 2px solid #a5d8ff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin: 0 6px 6px 0;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .snip-btn:hover { background: #d0ebff; }
+
+  /* Editor */
+  textarea#editor {
+    width: 100%;
+    min-height: 190px;
+    font-family: var(--code-font);
+    font-size: 20px;
+    line-height: 1.5;
+    padding: 14px;
+    border: 3px solid #bac8ff;
+    border-radius: 12px;
+    background: #fbfcff;
+    color: #1f2a44;
+    resize: vertical;
+    tab-size: 2;
+  }
+  textarea#editor:focus { outline: none; border-color: var(--accent); }
+
+  .editor-tools { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* Buttons */
+  .btn {
+    font-family: var(--ui-font);
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.06s ease, filter 0.1s ease;
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.05); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-run { background: var(--good); font-size: 24px; padding: 16px 26px; width: 100%; }
+  .btn-secondary { background: #868e96; font-size: 18px; padding: 10px 16px; }
+  .btn-next { background: var(--accent); }
+
+  /* Console */
+  .right h2 { color: #fff; }
+  .right { background: linear-gradient(160deg, #1b2a4a, #16233d); }
+  .console {
+    flex: 1;
+    background: var(--console-bg);
+    color: var(--console-ink);
+    font-family: var(--code-font);
+    font-size: 21px;
+    border-radius: 12px;
+    padding: 16px;
+    min-height: 240px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-y: auto;
+    border: 3px solid #0b1626;
+    margin-bottom: 14px;
+  }
+  .console .muted { color: #5b7089; }
+  .console .err { color: #ff8787; font-weight: bold; }
+  .console .ok { color: #63e6be; }
+
+  .banner {
+    display: none;
+    background: #ebfbee;
+    border: 3px solid #69db7c;
+    color: var(--good-dark);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .banner.show { display: block; animation: pop 0.35s ease; }
+  @keyframes pop { 0%{ transform: scale(0.85); opacity: 0; } 100%{ transform: scale(1); opacity: 1; } }
+
+  .expected-hint {
+    font-size: 16px; color: #dfe6f5; margin-bottom: 12px;
+    background: rgba(255,255,255,0.08); padding: 10px 12px; border-radius: 10px;
+    font-family: var(--code-font);
+  }
+  .expected-hint span { color: #ffe066; }
+
+  footer {
+    text-align: center;
+    padding: 18px;
+    color: #495057;
+    font-size: 16px;
+  }
+  footer .btn-reset {
+    background: var(--warn); color: #fff; font-size: 16px; padding: 8px 16px;
+  }
+
+  /* ===== Reward Dashboard ===== */
+  .reward-dash { max-width: 1500px; margin: 0 auto; padding: 14px 18px 0; }
+  .reward-card {
+    background: linear-gradient(90deg,#fff3bf,#ffec99);
+    border: 3px solid #ffe066; border-radius: 16px;
+    padding: 12px 18px; display: flex; align-items: center; gap: 16px;
+    flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .reward-chip {
+    background: #4c6ef5; color:#fff; font-weight:bold; border-radius: 999px;
+    padding: 8px 16px; font-size: 20px; white-space: nowrap;
+  }
+  .reward-chip.money { background: #2f9e44; }
+  .reward-progress-wrap { flex: 1; min-width: 200px; }
+  .reward-progress-track {
+    background:#fff; border:3px solid #ffd43b; border-radius: 999px;
+    height: 32px; overflow: hidden; position: relative;
+  }
+  .reward-progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg,#69db7c,#2f9e44); border-radius: 999px;
+    transition: width 0.6s cubic-bezier(.2,.8,.2,1);
+  }
+  .reward-progress-label {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-weight:bold; font-size:16px; color:#1f2a44; text-shadow:0 1px 2px rgba(255,255,255,0.6);
+  }
+  .btn-claim {
+    background: linear-gradient(90deg,#f783ac,#e64980); color:#fff;
+    font-size: 20px; font-weight:bold; border:none; border-radius: 14px;
+    padding: 12px 20px; cursor:pointer; box-shadow: 0 4px 0 #c2255c;
+    animation: pulse 1.2s infinite; display:none;
+  }
+  .btn-claim.show { display:inline-block; }
+  @keyframes pulse { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+
+  /* ===== Overlays / Modals ===== */
+  .overlay {
+    display:none; position:fixed; inset:0; z-index:100;
+    background: rgba(15,25,45,0.55); align-items:center; justify-content:center; padding:20px;
+  }
+  .overlay.show { display:flex; }
+  .modal {
+    background:#fff; border-radius: 22px; padding: 28px 30px; max-width: 460px; width:100%;
+    text-align:center; box-shadow: 0 12px 40px rgba(0,0,0,0.3); animation: pop 0.35s ease;
+  }
+  .reward-pop { border: 5px solid #ffd43b; }
+  .reward-pop .big { font-size: 44px; margin: 6px 0; }
+  .reward-pop .pts { color:#3b5bdb; font-size: 34px; font-weight:bold; }
+  .reward-pop .cash { color:#2b8a3e; font-size: 26px; font-weight:bold; margin-top:6px; }
+  .reward-pop .total { font-size:18px; color:#495057; margin-top:14px; }
+
+  /* confetti */
+  .confetti { position:fixed; inset:0; pointer-events:none; z-index:120; overflow:hidden; display:none; }
+  .confetti.show { display:block; }
+  .confetti i {
+    position:absolute; top:-24px; width:12px; height:18px; opacity:0.95;
+    animation: fall linear forwards;
+  }
+  @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+  .confetti i.emoji { width:auto; height:auto; background:transparent !important; font-size:28px; line-height:1; }
+
+  /* parent money toggle */
+  .reward-toggle {
+    background:#fff; color:#495057; border:2px solid #ced4da; border-radius:999px;
+    padding:8px 14px; font-size:15px; font-weight:bold; cursor:pointer; white-space:nowrap;
+  }
+  .reward-toggle:hover { background:#f1f3f5; }
+  .reward-toggle.on { background:#2f9e44; color:#fff; border-color:#2b8a3e; }
+
+  /* livelier popup */
+  .reward-pop .big { display:inline-block; animation: wiggle 0.55s ease-in-out infinite alternate; }
+  @keyframes wiggle { from{ transform: rotate(-12deg) scale(1);} to{ transform: rotate(12deg) scale(1.18);} }
+  .reward-pop .pts { animation: ptsPop 0.5s ease; }
+  @keyframes ptsPop { 0%{ transform: scale(0.4); opacity:0;} 60%{ transform: scale(1.25);} 100%{ transform: scale(1); opacity:1;} }
+  #popStars { animation: ptsPop 0.6s ease; }
+
+  /* screen shake for high-tier wins */
+  body.shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes shake {
+    10%,90%{ transform: translateX(calc(var(--shake,4px) * -1)); }
+    20%,80%{ transform: translateX(var(--shake,4px)); }
+    30%,50%,70%{ transform: translateX(calc(var(--shake,4px) * -1)); }
+    40%,60%{ transform: translateX(var(--shake,4px)); }
+  }
+
+  /* ===== Certificate ===== */
+  .certificate {
+    background:#fffdf5; border: 10px solid #d4af37; border-radius: 8px;
+    padding: 30px 34px; max-width: 640px; width:100%; text-align:center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35); position: relative; font-family: "Georgia", serif;
+  }
+  .certificate::after {
+    content:""; position:absolute; inset:10px; border:2px solid #d4af37; border-radius:4px; pointer-events:none;
+  }
+  .cert-seal { font-size: 60px; }
+  .cert-title { font-size: 32px; color:#9c6b00; margin: 6px 0; letter-spacing:1px; }
+  .cert-sub { font-size: 20px; color:#495057; }
+  .cert-body { font-size: 21px; color:#1f2a44; margin: 18px 6px; line-height:1.5; }
+  .cert-body b { color:#2b8a3e; }
+  .cert-prize-label { font-size:16px; color:#868e96; margin-top:14px; }
+  #certPrize {
+    font-size: 22px; text-align:center; padding: 10px 12px; width: 90%;
+    border: 2px dashed #d4af37; border-radius: 10px; font-family: inherit;
+    margin-top: 6px; color:#9c6b00; background:#fffef9;
+  }
+  .cert-line { margin-top: 22px; font-size:16px; color:#868e96; }
+  .cert-actions { margin-top:20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+
+  /* parent gate */
+  .gate .q { font-size: 30px; font-weight:bold; margin: 12px 0; color:#e8590c; }
+  .gate input {
+    font-size: 24px; padding: 10px 14px; width: 150px; text-align:center;
+    border:3px solid #bac8ff; border-radius:10px;
+  }
+  .gate .hint { font-size:15px; color:#868e96; margin-top:12px; }
+  .gate .gerr { color:#e03131; font-weight:bold; min-height:22px; margin-top:8px; }
+
+  /* predict-the-output */
+  .predict-box { background: rgba(255,255,255,0.08); border:2px dashed #74c0fc; border-radius:12px; padding:12px 14px; margin-bottom:12px; }
+  .predict-box label { display:block; font-size:16px; color:#dfe6f5; margin-bottom:8px; font-weight:bold; }
+  #predictInput {
+    width:100%; font-family:var(--code-font); font-size:17px; padding:10px; border-radius:8px;
+    border:2px solid #4dabf7; background:#0e1c30; color:#b3f5c8; resize:vertical; min-height:48px;
+  }
+  #predictInput:focus { outline:none; border-color:#a5d8ff; }
+  #predictFeedback { margin-top:8px; font-size:16px; min-height:20px; }
+  .pf-ok { color:#63e6be; font-weight:bold; }
+  .pf-no { color:#ffd43b; font-weight:bold; }
+  .pf-tip { color:#a5d8ff; }
+  .expected-hint.hidden { display:none; }
+
+  /* skill report */
+  .report { max-width:660px; width:100%; text-align:left; max-height:88vh; overflow-y:auto; }
+  .report h2 { color:var(--accent-dark); text-align:center; margin-bottom:4px; }
+  .coder-level { text-align:center; font-size:28px; font-weight:bold; color:#3b5bdb; margin:6px 0; }
+  .report .summary { text-align:center; font-size:16px; color:#495057; margin-bottom:14px; }
+  .rep-row { display:flex; align-items:center; gap:12px; padding:10px 6px; border-bottom:2px solid #f1f3f5; }
+  .rep-name { flex:1.3; font-size:17px; font-weight:bold; color:#1f2a44; }
+  .rep-prog { flex:1.5; }
+  .rep-prog .track { background:#e9ecef; border-radius:999px; height:16px; overflow:hidden; }
+  .rep-prog .fill { height:100%; background:linear-gradient(90deg,#69db7c,#2f9e44); }
+  .rep-prog .txt { font-size:13px; color:#868e96; margin-top:3px; }
+  .rep-stars { flex:1; text-align:right; white-space:nowrap; font-size:18px; }
+  .rep-stars .lvl { display:block; font-size:12px; color:#868e96; }
+  .rep-stars .untested { font-size:14px; color:#adb5bd; }
+  .rep-legend { font-size:14px; color:#868e96; margin-top:14px; text-align:center; line-height:1.5; }
+
+  @media print {
+    body * { visibility: hidden !important; }
+    #certOverlay, #certOverlay *, #reportOverlay, #reportOverlay * { visibility: visible !important; }
+    #certOverlay, #reportOverlay { position:absolute; inset:0; background:#fff !important; display:flex !important; padding:0; }
+    .certificate { box-shadow:none; }
+    .cert-actions { display:none !important; }
+  }
+
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .level-grid { grid-template-columns: repeat(8, 1fr); }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>🚀 Kidz Java Coding Lab</h1>
+    <p>Learn real Java, one tiny step at a time!</p>
+  </header>
+
+  <!-- REWARD DASHBOARD -->
+  <div class="reward-dash">
+    <div class="reward-card">
+      <div class="reward-chip">⭐ Points: <span id="pointsVal">0</span></div>
+      <div class="reward-chip money" id="moneyChip" style="display:none;">💰 Earned Reward: <span id="cashVal">$0.00</span> / $40.00</div>
+      <button class="reward-toggle" id="parentToggle">👪 Parents: Show $</button>
+      <div class="reward-progress-wrap">
+        <div class="reward-progress-track">
+          <div class="reward-progress-fill" id="rewardFill"></div>
+          <div class="reward-progress-label" id="rewardPct">0%</div>
+        </div>
+      </div>
+      <button class="btn-claim" id="claimBtn">🎁 Claim Your Reward!</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- LEFT PANEL -->
+    <section class="panel left">
+      <div class="level-selector">
+        <h2>📚 Pick a Level</h2>
+        <div class="level-grid" id="levelGrid"></div>
+        <div class="progress-line" id="progressLine"></div>
+        <div class="jump-row">
+          Jump to level:
+          <input id="jumpInput" type="number" min="1" max="1000" placeholder="#" />
+          <button class="btn btn-secondary" id="jumpBtn" style="font-size:15px; padding:6px 12px;">Go</button>
+        </div>
+      </div>
+
+      <div class="lesson-title" id="lessonTitle"></div>
+      <div class="instruction" id="instruction"></div>
+
+      <div class="snips">
+        <div class="snips-label">🧩 Click a block to add it to your code:</div>
+        <div id="snipPalette"></div>
+      </div>
+
+      <textarea id="editor" spellcheck="false" aria-label="Code area"></textarea>
+
+      <div class="editor-tools">
+        <button class="btn btn-secondary" id="loadExample">💡 Show Example</button>
+        <button class="btn btn-secondary" id="clearBtn">🧹 Clear</button>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <section class="panel right">
+      <h2>🖥️ Java Console</h2>
+      <div class="banner" id="banner">🎉 Great job! Level complete!</div>
+      <div class="predict-box">
+        <label>🔮 Read the code, then guess what it will print (optional):</label>
+        <textarea id="predictInput" spellcheck="false" placeholder="Type your guess here..."></textarea>
+        <div id="predictFeedback"></div>
+      </div>
+      <div class="expected-hint hidden" id="expectedHint">Goal output: <span id="expected"></span></div>
+      <div class="console" id="console"><span class="muted">Press "Run Code" to see what your Java does...</span></div>
+      <button class="btn btn-run" id="runBtn">▶ Run Code</button>
+      <div style="margin-top:12px; display:flex; gap:10px;">
+        <button class="btn btn-secondary" id="prevBtn" style="flex:1;">◀ Back</button>
+        <button class="btn btn-next" id="nextBtn" style="flex:2;">Next Level ▶</button>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>Your progress is saved automatically on this computer. 🔒</p>
+    <button class="btn btn-secondary" id="reportBtn" style="background:#3b5bdb;">📊 Skill Report</button>
+    <button class="btn-reset btn" id="resetBtn">🗑️ Reset All Progress</button>
+    <p style="margin-top:14px;">Made for young coders • Works offline • No internet needed</p>
+  </footer>
+
+  <!-- REWARD POPUP -->
+  <div class="overlay" id="rewardOverlay">
+    <div class="modal reward-pop">
+      <div class="big">🎉</div>
+      <div class="pts" id="popAward">+100 Points!</div>
+      <div id="popStars" style="font-size:24px; margin:2px 0;"></div>
+      <div class="cash" id="popCashLine">+$0.40 added to your reward pot!</div>
+      <div class="cash" id="popKidLine" style="display:none; color:#e64980;">You're a coding superstar! 🌟</div>
+      <div class="total">Total: <b id="popPoints">0</b> pts<span id="popCashWrap"> • <b id="popCash">$0.00</b> earned of $40.00</span></div>
+      <button class="btn btn-run" id="rewardClose" style="width:auto; margin-top:18px;">Keep Going! ▶</button>
+    </div>
+  </div>
+
+  <!-- CONFETTI LAYER -->
+  <div class="confetti" id="confetti"></div>
+
+  <!-- $40 CERTIFICATE -->
+  <div class="overlay" id="certOverlay">
+    <div class="certificate">
+      <div class="cert-seal">🏆</div>
+      <div class="cert-title">Official Java Master Certificate</div>
+      <div class="cert-sub">Kidz Java Coding Lab</div>
+      <div class="cert-body">
+        Congratulations! You have completed all <b id="certCount">1000</b> Java lessons and earned your
+        <b>$40 Reward</b> from your Parents!
+      </div>
+      <div class="cert-prize-label">✍️ This $40 reward is for:</div>
+      <input id="certPrize" type="text" maxlength="60" placeholder="e.g. Toy Store Pass" />
+      <div class="cert-line">Awarded to a Junior Java Coder &nbsp;•&nbsp; <span id="certDate"></span></div>
+      <div class="cert-actions">
+        <button class="btn btn-run" id="printCert" style="width:auto;">🖨️ Print Certificate</button>
+        <button class="btn btn-secondary" id="certClose">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARENT GATE (reset confirmation) -->
+  <div class="overlay" id="gateOverlay">
+    <div class="modal gate">
+      <div style="font-size:44px;">🔒</div>
+      <h2 style="color:#e8590c; margin:6px 0;">Parents Only</h2>
+      <p style="font-size:18px; margin:6px 0;" id="gateMsg">To continue, please answer:</p>
+      <div class="q" id="gateQ">7 × 8 = ?</div>
+      <input id="gateInput" type="number" inputmode="numeric" aria-label="Answer" />
+      <div class="gerr" id="gateErr"></div>
+      <div class="hint">This keeps kids from erasing their reward by accident.</div>
+      <div class="cert-actions">
+        <button class="btn btn-run" id="gateOk" style="width:auto; background:var(--warn);">Confirm Reset</button>
+        <button class="btn btn-secondary" id="gateCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKILL REPORT -->
+  <div class="overlay" id="reportOverlay">
+    <div class="modal report">
+      <h2>📊 My Coding Skill Report</h2>
+      <div class="coder-level" id="reportLevel"></div>
+      <div class="summary" id="reportSummary"></div>
+      <div id="reportRows"></div>
+      <div class="rep-legend">
+        ⭐ = understanding, from how often you correctly guessed the output <b>before</b> running.<br>
+        The bar shows how many levels you've finished. Use 🔮 Guess mode to earn more stars!
+      </div>
+      <div class="cert-actions">
+        <button class="btn btn-run" id="reportPrint" style="width:auto;">🖨️ Print</button>
+        <button class="btn btn-secondary" id="reportClose">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* =========================================================================
+   PART 1 — THE LEVELS
+   A central `levels` array of level objects: { id, title, instruction,
+   startingCode, expectedOutput }. Levels 1-20 follow the beginner pacing;
+   later levels build up to variables, math, and if-statements.
+   ========================================================================= */
+const levels = [];
+let _id = 1;
+function add(o) { o.id = _id++; levels.push(o); }
+
+/* --- Levels 1–20: Batch 1 (hand-authored for 5-year-old beginners) ------
+   1–5 text printing, 6–10 numbers, 11–15 add/subtract, 16–20 words+numbers. */
+[
+  { title: "Print a Word",
+    instruction: "Computers can show words on the screen. We use <b>System.out.println()</b> to print. Press Run to see the word <b>Hello</b> appear!",
+    startingCode: 'System.out.println("Hello");', expectedOutput: "Hello" },
+  { title: "Say Hi",
+    instruction: 'The words to print go inside the quotes " ". Run the code to print the word <b>Hi</b>.',
+    startingCode: 'System.out.println("Hi");', expectedOutput: "Hi" },
+  { title: "Print Your Feeling",
+    instruction: "Anything you type inside the quotes will show up. Print the words <b>I am happy</b>.",
+    startingCode: 'System.out.println("I am happy");', expectedOutput: "I am happy" },
+  { title: "Print a Sentence",
+    instruction: "You can print a whole sentence. Run this to print <b>I like Java</b>.",
+    startingCode: 'System.out.println("I like Java");', expectedOutput: "I like Java" },
+  { title: "Hello, World!",
+    instruction: "This is the most famous line in coding. Print <b>Hello, World!</b> and join every coder ever.",
+    startingCode: 'System.out.println("Hello, World!");', expectedOutput: "Hello, World!" },
+
+  { title: "Print a Number",
+    instruction: "Numbers do NOT need quotes. Just put the number inside the brackets. Print the number <b>5</b>.",
+    startingCode: "System.out.println(5);", expectedOutput: "5" },
+  { title: "A Bigger Number",
+    instruction: "You can print big numbers too. No quotes are needed for numbers. Print <b>100</b>.",
+    startingCode: "System.out.println(100);", expectedOutput: "100" },
+  { title: "Your Age",
+    instruction: "Numbers work with no quotes. Print the number <b>6</b> all by itself.",
+    startingCode: "System.out.println(6);", expectedOutput: "6" },
+  { title: "Count to Zero",
+    instruction: "Zero is a number too! Print the number <b>0</b>.",
+    startingCode: "System.out.println(0);", expectedOutput: "0" },
+  { title: "A Very Big Number",
+    instruction: "Try a really big number. Print <b>2026</b> with no quotes.",
+    startingCode: "System.out.println(2026);", expectedOutput: "2026" },
+
+  { title: "Add Two Numbers",
+    instruction: "Java can do math! The <b>+</b> sign adds numbers. Run this to add <b>2 + 3</b>. The answer will be 5.",
+    startingCode: "System.out.println(2 + 3);", expectedOutput: "5" },
+  { title: "Add Bigger Numbers",
+    instruction: "Java adds the numbers before it prints. Print the answer to <b>10 + 5</b>.",
+    startingCode: "System.out.println(10 + 5);", expectedOutput: "15" },
+  { title: "Take Away",
+    instruction: "The <b>-</b> sign takes numbers away. Print the answer to <b>9 - 4</b>.",
+    startingCode: "System.out.println(9 - 4);", expectedOutput: "5" },
+  { title: "Add Big and Small",
+    instruction: "Java always solves the math first. Print the answer to <b>20 + 7</b>.",
+    startingCode: "System.out.println(20 + 7);", expectedOutput: "27" },
+  { title: "Subtract Big Numbers",
+    instruction: "Let's take away a bigger number. Print the answer to <b>100 - 25</b>.",
+    startingCode: "System.out.println(100 - 25);", expectedOutput: "75" },
+
+  { title: "Words and a Number",
+    instruction: "The <b>+</b> sign can also glue words to a number. Print <b>Age: 5</b> by joining the word and the number.",
+    startingCode: 'System.out.println("Age: " + 5);', expectedOutput: "Age: 5" },
+  { title: "Show a Score",
+    instruction: "Put a label in quotes, then <b>+</b> your number. Print <b>Score: 10</b>.",
+    startingCode: 'System.out.println("Score: " + 10);', expectedOutput: "Score: 10" },
+  { title: "I Am This Old",
+    instruction: "Join the words to the number with <b>+</b>. Print <b>I am 6</b>.",
+    startingCode: 'System.out.println("I am " + 6);', expectedOutput: "I am 6" },
+  { title: "Count the Stars",
+    instruction: "Glue a word and a number together. Print <b>Stars: 3</b>.",
+    startingCode: 'System.out.println("Stars: " + 3);', expectedOutput: "Stars: 3" },
+  { title: "Words and Math Together",
+    instruction: "You can join words to a math answer too. Java solves <b>2 + 3</b> first, then glues it on. Print <b>Total: 5</b>.",
+    startingCode: 'System.out.println("Total: " + (2 + 3));', expectedOutput: "Total: 5" }
+].forEach(add);
+
+/* --- Levels 21–40: Batch 2 (hand-authored) — Integer Variables ----------
+   21–25 make & print a box, 26–30 change/use a box, 31–35 add two boxes,
+   36–40 join a label to a box. */
+[
+  { title: "Make a Number Box",
+    instruction: "A variable is a box that holds a number. Make a box called <b>x</b> and put <b>5</b> inside it, then print x. The box shows its number: 5.",
+    startingCode: "int x = 5;\nSystem.out.println(x);", expectedOutput: "5" },
+  { title: "A Box Called age",
+    instruction: "You can name your box anything. Make a box named <b>age</b> holding <b>6</b>, then print age.",
+    startingCode: "int age = 6;\nSystem.out.println(age);", expectedOutput: "6" },
+  { title: "A Box of Stars",
+    instruction: "Make a box named <b>stars</b> with <b>3</b> inside. Print stars to show how many.",
+    startingCode: "int stars = 3;\nSystem.out.println(stars);", expectedOutput: "3" },
+  { title: "Ten Apples",
+    instruction: "The word <b>int</b> means the box holds a whole number. Make <b>apples</b> hold <b>10</b>, then print apples.",
+    startingCode: "int apples = 10;\nSystem.out.println(apples);", expectedOutput: "10" },
+  { title: "Starting at Zero",
+    instruction: "A box can start with <b>0</b>. Make a box named <b>score</b> with 0 inside, then print score.",
+    startingCode: "int score = 0;\nSystem.out.println(score);", expectedOutput: "0" },
+
+  { title: "Change the Box",
+    instruction: "You can put a new number in a box later. <b>x</b> starts at 5, then we change it to <b>8</b>. Print x to see the new number.",
+    startingCode: "int x = 5;\nx = 8;\nSystem.out.println(x);", expectedOutput: "8" },
+  { title: "Add to the Box",
+    instruction: "<b>coins</b> holds 2. The line <b>coins = coins + 3</b> adds 3 more. Print coins to see 5.",
+    startingCode: "int coins = 2;\ncoins = coins + 3;\nSystem.out.println(coins);", expectedOutput: "5" },
+  { title: "Take One Away",
+    instruction: "<b>lives</b> holds 5. The line <b>lives = lives - 1</b> takes one away. Print lives to see 4.",
+    startingCode: "int lives = 5;\nlives = lives - 1;\nSystem.out.println(lives);", expectedOutput: "4" },
+  { title: "Math With a Box",
+    instruction: "You can do math with a box. <b>n</b> holds 4. Print <b>n + 1</b> to get 5.",
+    startingCode: "int n = 4;\nSystem.out.println(n + 1);", expectedOutput: "5" },
+  { title: "Subtract From a Box",
+    instruction: "<b>n</b> holds 10. Print <b>n - 2</b> to get 8.",
+    startingCode: "int n = 10;\nSystem.out.println(n - 2);", expectedOutput: "8" },
+
+  { title: "Two Boxes Add Up",
+    instruction: "Make two boxes, <b>a</b> and <b>b</b>. Then print <b>a + b</b> to add them together. The answer is 5.",
+    startingCode: "int a = 2;\nint b = 3;\nSystem.out.println(a + b);", expectedOutput: "5" },
+  { title: "Two Boxes Take Away",
+    instruction: "<b>a</b> holds 10 and <b>b</b> holds 5. Print <b>a - b</b> to take one from the other. The answer is 5.",
+    startingCode: "int a = 10;\nint b = 5;\nSystem.out.println(a - b);", expectedOutput: "5" },
+  { title: "Same Numbers",
+    instruction: "Both boxes hold 4. Print <b>a + b</b> to see what two fours make: 8.",
+    startingCode: "int a = 4;\nint b = 4;\nSystem.out.println(a + b);", expectedOutput: "8" },
+  { title: "Cats and Dogs",
+    instruction: "Make a box <b>cats</b> with 3 and a box <b>dogs</b> with 2. Print <b>cats + dogs</b> to count all the pets: 5.",
+    startingCode: "int cats = 3;\nint dogs = 2;\nSystem.out.println(cats + dogs);", expectedOutput: "5" },
+  { title: "Big Minus Small",
+    instruction: "<b>big</b> holds 20 and <b>small</b> holds 5. Print <b>big - small</b> to get 15.",
+    startingCode: "int big = 20;\nint small = 5;\nSystem.out.println(big - small);", expectedOutput: "15" },
+
+  { title: "Show the Age",
+    instruction: "Put a number in a box, then glue a word label to it with <b>+</b>. <b>age</b> holds 7. Print Age: 7.",
+    startingCode: 'int age = 7;\nSystem.out.println("Age: " + age);', expectedOutput: "Age: 7" },
+  { title: "Show the Score",
+    instruction: "<b>score</b> holds 10. Join the label and the box with <b>+</b>. Print Score: 10.",
+    startingCode: 'int score = 10;\nSystem.out.println("Score: " + score);', expectedOutput: "Score: 10" },
+  { title: "Count the Stars Box",
+    instruction: "<b>stars</b> holds 5. Glue the word to the box with <b>+</b>. Print Stars: 5.",
+    startingCode: 'int stars = 5;\nSystem.out.println("Stars: " + stars);', expectedOutput: "Stars: 5" },
+  { title: "Label Plus Math",
+    instruction: "Do the math in brackets first, then glue on the label. <b>a</b> holds 2 and <b>b</b> holds 3. Print Total: 5.",
+    startingCode: 'int a = 2;\nint b = 3;\nSystem.out.println("Total: " + (a + b));', expectedOutput: "Total: 5" },
+  { title: "Count the Fruit",
+    instruction: "<b>apples</b> holds 4 and <b>bananas</b> holds 3. Add them in brackets and show a label. Print Fruit: 7.",
+    startingCode: 'int apples = 4;\nint bananas = 3;\nSystem.out.println("Fruit: " + (apples + bananas));', expectedOutput: "Fruit: 7" }
+].forEach(add);
+
+/* Levels 41–1000 are generated procedurally in escalating difficulty bands.
+   See "PART 2.5 — LEVEL GENERATOR" below (it runs after the engine is defined,
+   so each generated level's expectedOutput is produced by real execution). */
+
+
+/* =========================================================================
+   PART 2 — THE MINI JAVA SIMULATOR ENGINE
+   A small lexer + recursive-descent parser + interpreter that understands:
+     - System.out.println(...) / System.out.print(...)
+     - String literals and + concatenation
+     - int variable declarations & assignment
+     - arithmetic: + - * / %  (integer math, like Java)
+     - comparisons and if / else (with { } blocks)
+   Errors are written in kid-friendly language.
+   ========================================================================= */
+
+function kidError(msg, line) {
+  const e = new Error(msg);
+  e.friendly = true;
+  e.line = line;
+  return e;
+}
+
+/* ---------- Lexer ---------- */
+function lex(src) {
+  const tokens = [];
+  let i = 0, line = 1;
+  const n = src.length;
+  while (i < n) {
+    const c = src[i];
+    if (c === "\n") { line++; i++; continue; }
+    if (/\s/.test(c)) { i++; continue; }
+    // line comments
+    if (c === "/" && src[i + 1] === "/") { while (i < n && src[i] !== "\n") i++; continue; }
+    // strings
+    if (c === '"') {
+      let j = i + 1, str = "";
+      while (j < n && src[j] !== '"') {
+        if (src[j] === "\\" && j + 1 < n) {
+          const nx = src[j + 1];
+          str += nx === "n" ? "\n" : nx === "t" ? "\t" : nx;
+          j += 2; continue;
+        }
+        if (src[j] === "\n") break;
+        str += src[j]; j++;
+      }
+      if (j >= n || src[j] !== '"') throw kidError('Oops! You started some text with " but forgot to close it with another ".', line);
+      tokens.push({ type: "string", value: str, line });
+      i = j + 1; continue;
+    }
+    // numbers
+    if (/[0-9]/.test(c)) {
+      let j = i, num = "";
+      while (j < n && /[0-9]/.test(src[j])) { num += src[j]; j++; }
+      tokens.push({ type: "number", value: parseInt(num, 10), line });
+      i = j; continue;
+    }
+    // identifiers (dots allowed so System.out.println is one token)
+    if (/[A-Za-z_]/.test(c)) {
+      let j = i, id = "";
+      while (j < n && /[A-Za-z0-9_.]/.test(src[j])) { id += src[j]; j++; }
+      tokens.push({ type: "ident", value: id, line });
+      i = j; continue;
+    }
+    // two-char operators
+    const two = src.substr(i, 2);
+    if (["==", "!=", "<=", ">=", "&&", "||"].includes(two)) {
+      tokens.push({ type: "op", value: two, line }); i += 2; continue;
+    }
+    // single-char operators / punctuation
+    if ("(){};+-*/%=<>!".includes(c)) {
+      tokens.push({ type: "op", value: c, line }); i++; continue;
+    }
+    throw kidError("I don't understand the symbol '" + c + "'.", line);
+  }
+  tokens.push({ type: "eof", value: "", line });
+  return tokens;
+}
+
+/* ---------- Parser ---------- */
+function Parser(tokens) { this.t = tokens; this.i = 0; }
+Parser.prototype.peek = function () { return this.t[this.i]; };
+Parser.prototype.next = function () { return this.t[this.i++]; };
+Parser.prototype.expect = function (val, msg) {
+  const tk = this.peek();
+  if (tk.value !== val) throw kidError(msg || ("I expected '" + val + "' here."), tk.line);
+  return this.next();
+};
+
+Parser.prototype.parseProgram = function () {
+  const stmts = [];
+  while (this.peek().type !== "eof") stmts.push(this.parseStatement());
+  return stmts;
+};
+
+Parser.prototype.parseStatement = function () {
+  const tk = this.peek();
+  if (tk.type === "op" && tk.value === "{") return { type: "block", body: this.parseBlock() };
+  if (tk.type === "ident") {
+    if (tk.value === "int" || tk.value === "String") return this.parseDecl();
+    if (tk.value === "if") return this.parseIf();
+    if (tk.value === "for") return this.parseFor();
+    if (tk.value === "while") return this.parseWhile();
+    if (tk.value === "System.out.println" || tk.value === "System.out.print") return this.parsePrint();
+    if (tk.value === "else") throw kidError("I found 'else' without an 'if' in front of it.", tk.line);
+    return this.parseAssign();
+  }
+  throw kidError("I didn't understand this line. Start with System.out.println, int, or if.", tk.line);
+};
+
+Parser.prototype.parseBlock = function () {
+  this.expect("{", "A block needs to start with { .");
+  const body = [];
+  while (!(this.peek().type === "op" && this.peek().value === "}") && this.peek().type !== "eof") {
+    body.push(this.parseStatement());
+  }
+  this.expect("}", "You forgot to close a block with } .");
+  return body;
+};
+
+Parser.prototype.parseBlockOrStatement = function () {
+  if (this.peek().type === "op" && this.peek().value === "{") return { type: "block", body: this.parseBlock() };
+  return this.parseStatement();
+};
+
+Parser.prototype.parsePrint = function () {
+  const tk = this.next();
+  const newline = tk.value === "System.out.println";
+  this.expect("(", "Put your text or number inside round brackets ( ) after println.");
+  let expr = null;
+  if (!(this.peek().type === "op" && this.peek().value === ")")) expr = this.parseExpression();
+  this.expect(")", "You need a closing bracket ) here.");
+  this.expect(";", "Don't forget the semicolon ; at the end of the line.");
+  return { type: "print", newline, expr, line: tk.line };
+};
+
+Parser.prototype.parseDecl = function () {
+  const tk = this.next(); // 'int' or 'String'
+  const varType = tk.value;
+  const nameTk = this.peek();
+  if (nameTk.type !== "ident") throw kidError(`After '${varType}' you need a name for your box, like: ${varType} score`, tk.line);
+  this.next();
+  let expr = varType === "String" ? { type: "str", value: "", line: tk.line } : { type: "num", value: 0, line: tk.line };
+  if (this.peek().value === "=") { this.next(); expr = this.parseExpression(); }
+  this.expect(";", "Don't forget the semicolon ; at the end of the line.");
+  return { type: "decl", varType, name: nameTk.value, expr, line: tk.line };
+};
+
+/* for (init ; cond ; update) { body }  —  init/update are clauses with NO ; */
+Parser.prototype.parseForClause = function () {
+  const tk = this.peek();
+  if (tk.type === "ident" && (tk.value === "int" || tk.value === "String")) {
+    this.next();
+    const nameTk = this.next();
+    this.expect("=", "This part of the for-loop needs an = sign.");
+    return { type: "decl", varType: tk.value, name: nameTk.value, expr: this.parseExpression(), line: tk.line };
+  }
+  const nameTk = this.next();
+  this.expect("=", "This part of the for-loop needs an = sign.");
+  return { type: "assign", name: nameTk.value, expr: this.parseExpression(), line: nameTk.line };
+};
+
+Parser.prototype.parseFor = function () {
+  const tk = this.next(); // 'for'
+  this.expect("(", "A for-loop needs ( ) right after the word 'for'.");
+  let init = null;
+  if (!(this.peek().type === "op" && this.peek().value === ";")) init = this.parseForClause();
+  this.expect(";", "A for-loop needs a ; after the start part.");
+  let cond = null;
+  if (!(this.peek().type === "op" && this.peek().value === ";")) cond = this.parseExpression();
+  this.expect(";", "A for-loop needs a ; after the check part.");
+  let update = null;
+  if (!(this.peek().type === "op" && this.peek().value === ")")) update = this.parseForClause();
+  this.expect(")", "A for-loop needs a ) to close its setup.");
+  return { type: "for", init, cond, update, body: this.parseBlockOrStatement(), line: tk.line };
+};
+
+Parser.prototype.parseWhile = function () {
+  const tk = this.next(); // 'while'
+  this.expect("(", "Put your question inside ( ) after while.");
+  const cond = this.parseExpression();
+  this.expect(")", "You need a closing bracket ) after the while question.");
+  return { type: "while", cond, body: this.parseBlockOrStatement(), line: tk.line };
+};
+
+Parser.prototype.parseAssign = function () {
+  const nameTk = this.next();
+  this.expect("=", `To put a value in '${nameTk.value}' use =, like ${nameTk.value} = 5;`);
+  const expr = this.parseExpression();
+  this.expect(";", "Don't forget the semicolon ; at the end of the line.");
+  return { type: "assign", name: nameTk.value, expr, line: nameTk.line };
+};
+
+Parser.prototype.parseIf = function () {
+  const tk = this.next(); // 'if'
+  this.expect("(", "Put your question inside ( ) after if.");
+  const cond = this.parseExpression();
+  this.expect(")", "You need a closing bracket ) after the if question.");
+  const thenBranch = this.parseBlockOrStatement();
+  let elseBranch = null;
+  if (this.peek().type === "ident" && this.peek().value === "else") {
+    this.next();
+    elseBranch = this.parseBlockOrStatement();
+  }
+  return { type: "if", cond, then: thenBranch, else: elseBranch, line: tk.line };
+};
+
+/* ---------- Expression parsing (precedence climbing) ---------- */
+Parser.prototype.parseExpression = function () { return this.parseOr(); };
+Parser.prototype._binLevel = function (nextFn, ops) {
+  let left = nextFn.call(this);
+  while (this.peek().type === "op" && ops.includes(this.peek().value)) {
+    const opTk = this.next();
+    const right = nextFn.call(this);
+    left = { type: "bin", op: opTk.value, left, right, line: opTk.line };
+  }
+  return left;
+};
+Parser.prototype.parseOr  = function () { return this._binLevel(Parser.prototype.parseAnd, ["||"]); };
+Parser.prototype.parseAnd = function () { return this._binLevel(Parser.prototype.parseEq,  ["&&"]); };
+Parser.prototype.parseEq  = function () { return this._binLevel(Parser.prototype.parseRel, ["==", "!="]); };
+Parser.prototype.parseRel = function () { return this._binLevel(Parser.prototype.parseAdd, ["<", ">", "<=", ">="]); };
+Parser.prototype.parseAdd = function () { return this._binLevel(Parser.prototype.parseMul, ["+", "-"]); };
+Parser.prototype.parseMul = function () { return this._binLevel(Parser.prototype.parseUnary, ["*", "/", "%"]); };
+Parser.prototype.parseUnary = function () {
+  const tk = this.peek();
+  if (tk.type === "op" && (tk.value === "-" || tk.value === "!")) {
+    this.next();
+    return { type: "unary", op: tk.value, expr: this.parseUnary(), line: tk.line };
+  }
+  return this.parsePrimary();
+};
+Parser.prototype.parsePrimary = function () {
+  const tk = this.peek();
+  if (tk.type === "number") { this.next(); return { type: "num", value: tk.value, line: tk.line }; }
+  if (tk.type === "string") { this.next(); return { type: "str", value: tk.value, line: tk.line }; }
+  if (tk.type === "ident")  { this.next(); return { type: "var", name: tk.value, line: tk.line }; }
+  if (tk.type === "op" && tk.value === "(") {
+    this.next();
+    const e = this.parseExpression();
+    this.expect(")", "You opened a bracket ( but forgot to close it with ) .");
+    return e;
+  }
+  throw kidError("I expected a number, some text, or a box name here.", tk.line);
+};
+
+/* ---------- Evaluator ---------- */
+function valToStr(v) {
+  if (v.t === "str") return v.v;
+  if (v.t === "bool") return v.v ? "true" : "false";
+  return String(v.v);
+}
+function requireInt(a, b, line, op) {
+  if (a.t !== "int" || b.t !== "int")
+    throw kidError(`The ${op} sign needs numbers on both sides.`, line);
+}
+
+function evalExpr(n, env) {
+  switch (n.type) {
+    case "num": return { t: "int", v: n.value };
+    case "str": return { t: "str", v: n.value };
+    case "var":
+      if (!(n.name in env)) throw kidError(`I don't know a box called '${n.name}'. Make it first with: int ${n.name} = 0;`, n.line);
+      return env[n.name];
+    case "unary": {
+      const e = evalExpr(n.expr, env);
+      if (n.op === "-") { if (e.t !== "int") throw kidError("You can only put a minus - in front of numbers.", n.line); return { t: "int", v: -e.v }; }
+      if (e.t !== "bool") throw kidError("You can only use ! in front of a yes/no check.", n.line);
+      return { t: "bool", v: !e.v };
+    }
+    case "bin": return evalBin(n, env);
+  }
+  throw kidError("I got confused reading your code.", n.line);
+}
+
+function evalBin(n, env) {
+  const op = n.op;
+  const a = evalExpr(n.left, env);
+  const b = evalExpr(n.right, env);
+  if (op === "+") {
+    if (a.t === "str" || b.t === "str") return { t: "str", v: valToStr(a) + valToStr(b) };
+    requireInt(a, b, n.line, "+"); return { t: "int", v: a.v + b.v };
+  }
+  if (op === "-" || op === "*" || op === "/" || op === "%") {
+    requireInt(a, b, n.line, op);
+    if ((op === "/" || op === "%") && b.v === 0) throw kidError("Oops! You can't divide by zero.", n.line);
+    if (op === "-") return { t: "int", v: a.v - b.v };
+    if (op === "*") return { t: "int", v: a.v * b.v };
+    if (op === "/") return { t: "int", v: Math.trunc(a.v / b.v) };
+    return { t: "int", v: a.v % b.v };
+  }
+  if (op === "==" || op === "!=") {
+    const eq = a.t === b.t && a.v === b.v;
+    return { t: "bool", v: op === "==" ? eq : !eq };
+  }
+  if (["<", ">", "<=", ">="].includes(op)) {
+    requireInt(a, b, n.line, op);
+    const r = op === "<" ? a.v < b.v : op === ">" ? a.v > b.v : op === "<=" ? a.v <= b.v : a.v >= b.v;
+    return { t: "bool", v: r };
+  }
+  if (op === "&&" || op === "||") {
+    if (a.t !== "bool" || b.t !== "bool") throw kidError("&& and || need yes/no checks on both sides.", n.line);
+    return { t: "bool", v: op === "&&" ? (a.v && b.v) : (a.v || b.v) };
+  }
+  throw kidError("I don't know how to use '" + op + "'.", n.line);
+}
+
+function execStatement(st, env, out) {
+  switch (st.type) {
+    case "block":
+      for (const s of st.body) execStatement(s, env, out);
+      break;
+    case "decl": {
+      const v = evalExpr(st.expr, env);
+      if (st.varType === "String") {
+        env[st.name] = { t: "str", v: valToStr(v) };
+      } else {
+        if (v.t !== "int") throw kidError("A box made with 'int' can only hold whole numbers, not text.", st.line);
+        env[st.name] = { t: "int", v: v.v };
+      }
+      break;
+    }
+    case "assign": {
+      if (!(st.name in env)) throw kidError(`I don't know a box called '${st.name}'. Make it first with: int ${st.name} = 0;`, st.line);
+      env[st.name] = evalExpr(st.expr, env);
+      break;
+    }
+    case "print": {
+      let s = "";
+      if (st.expr) s = valToStr(evalExpr(st.expr, env));
+      out.push(s + (st.newline ? "\n" : ""));
+      break;
+    }
+    case "if": {
+      const c = evalExpr(st.cond, env);
+      if (c.t !== "bool") throw kidError("The question inside if ( ) must be a yes/no check, like x > 5.", st.line);
+      if (c.v) execStatement(st.then, env, out);
+      else if (st.else) execStatement(st.else, env, out);
+      break;
+    }
+    case "for": {
+      if (st.init) execStatement(st.init, env, out);
+      let guard = 0;
+      while (true) {
+        const c = st.cond ? evalExpr(st.cond, env) : { t: "bool", v: true };
+        if (c.t !== "bool") throw kidError("The middle part of a for-loop must be a yes/no check, like i < 5.", st.line);
+        if (!c.v) break;
+        execStatement(st.body, env, out);
+        if (st.update) execStatement(st.update, env, out);
+        if (++guard > LOOP_CAP) throw kidError("This loop kept going forever! Make sure it can stop.", st.line);
+      }
+      break;
+    }
+    case "while": {
+      let guard = 0;
+      while (true) {
+        const c = evalExpr(st.cond, env);
+        if (c.t !== "bool") throw kidError("The question inside while ( ) must be a yes/no check.", st.line);
+        if (!c.v) break;
+        execStatement(st.body, env, out);
+        if (++guard > LOOP_CAP) throw kidError("This loop kept going forever! Make sure it can stop.", st.line);
+      }
+      break;
+    }
+  }
+}
+
+/* Safety cap so a runaway loop can never freeze the browser. */
+const LOOP_CAP = 100000;
+
+/* Run a whole Java-ish program; returns the printed output. On error the
+   error carries `.partial` = whatever had been printed before it failed. */
+function runJava(source) {
+  const output = [];
+  const tokens = lex(source);
+  const program = new Parser(tokens).parseProgram();
+  const env = Object.create(null);
+  try {
+    for (const st of program) execStatement(st, env, output);
+  } catch (e) {
+    e.partial = output.join("");
+    throw e;
+  }
+  return output.join("");
+}
+
+
+/* =========================================================================
+   PART 2.5 — LEVEL GENERATOR (levels 41–1000)
+   The first 40 levels are hand-authored (gentle beginner ramp). From 41 up
+   to 1000, levels are generated procedurally in escalating difficulty bands.
+   Each level's expectedOutput is produced by actually RUNNING its code through
+   the engine above — so every generated level is guaranteed correct/solvable.
+   A per-id seeded RNG makes each level stable across page reloads.
+   ========================================================================= */
+function rngFor(seed) {
+  let a = (seed * 2654435761) >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function rint(rng, lo, hi) { return lo + Math.floor(rng() * (hi - lo + 1)); }
+function pick(rng, arr) { return arr[Math.floor(rng() * arr.length)]; }
+
+const VAR_NAMES = ["a", "b", "c", "x", "y", "n", "num", "count", "total", "score", "value", "step"];
+const LABELS = ["Answer", "Result", "Total", "Score", "Value", "Number", "Output", "Sum"];
+
+/* Each band returns { title, instruction, code }. Difficulty rises with id. */
+function genVarsMath(id, rng, mag) {
+  const a = rint(rng, 2, mag), b = rint(rng, 2, mag), c = rint(rng, 2, Math.max(3, Math.floor(mag / 2)));
+  const forms = [
+    { code: `int a = ${a};\nint b = ${b};\nint c = ${c};\nSystem.out.println(a + b * c);`, hint: "Remember: Java does × before +." },
+    { code: `int a = ${a};\nint b = ${b};\nint c = ${c};\nSystem.out.println((a + b) * c);`, hint: "The brackets ( ) happen first." },
+    { code: `int a = ${a};\nint b = ${b};\nSystem.out.println(a * b - ${rint(rng, 1, mag)});`, hint: "Multiply first, then take away." },
+    { code: `int a = ${a};\nint b = ${b};\nint c = ${c};\nSystem.out.println(a * b + c * c);`, hint: "Two multiplications added together." }
+  ];
+  const f = pick(rng, forms);
+  return { title: "Number Puzzle", instruction: `Read the code and work out the answer in your head. ${f.hint} Then press Run to check!`, code: f.code };
+}
+
+function genConcatMath(id, rng, mag) {
+  const a = rint(rng, 2, mag), b = rint(rng, 2, mag);
+  const L1 = pick(rng, LABELS), L2 = pick(rng, LABELS);
+  const forms = [
+    `int a = ${a};\nint b = ${b};\nSystem.out.println("${L1} = " + (a + b) + ", ${L2} = " + (a * b));`,
+    `int a = ${a};\nint b = ${b};\nSystem.out.println("${L1}: " + a + " and " + b + " make " + (a + b));`,
+    `int price = ${a};\nint many = ${b};\nSystem.out.println("Cost: " + (price * many));`
+  ];
+  return { title: "Words + Numbers", instruction: "This code glues words and math answers together. Read it, guess the line it prints, then Run.", code: pick(rng, forms) };
+}
+
+function genConditionals(id, rng, mag) {
+  const forms = [
+    () => { const n = rint(rng, 1, mag * 2); return { code: `int n = ${n};\nif (n % 2 == 0) {\n  System.out.println("Even");\n} else {\n  System.out.println("Odd");\n}`, hint: "Is n even or odd? (% 2 checks the remainder)" }; },
+    () => { let a = rint(rng, 2, mag), b = rint(rng, 2, mag); if (a === b) b += 1; return { code: `int a = ${a};\nint b = ${b};\nif (a > b) {\n  System.out.println(a + " is bigger");\n} else {\n  System.out.println(b + " is bigger");\n}`, hint: "Which number is bigger?" }; },
+    () => { const s = rint(rng, 40, 100); return { code: `int score = ${s};\nif (score >= 90) {\n  System.out.println("Grade A");\n} else if (score >= 70) {\n  System.out.println("Grade B");\n} else {\n  System.out.println("Grade C");\n}`, hint: "Which grade does the score reach?" }; }
+  ];
+  const f = pick(rng, forms)();
+  return { title: "Make a Choice", instruction: `An if-statement chooses what to print. ${f.hint} Read it, then Run.`, code: f.code };
+}
+
+function genBoolean(id, rng, mag) {
+  const a = rint(rng, 1, mag * 2), b = rint(rng, 1, mag * 2);
+  const x = rint(rng, 2, mag), y = rint(rng, 2, mag);
+  const forms = [
+    `int a = ${a};\nint b = ${b};\nif (a > ${x} && b < ${y + mag}) {\n  System.out.println("Both true!");\n} else {\n  System.out.println("Not both");\n}`,
+    `int n = ${a};\nif (n % 2 == 0 || n > ${mag}) {\n  System.out.println("Passes");\n} else {\n  System.out.println("Fails");\n}`,
+    `int age = ${rint(rng, 3, 15)};\nif (age >= 5 && age <= 12) {\n  System.out.println("Kid coder");\n} else {\n  System.out.println("Not in range");\n}`
+  ];
+  return { title: "And / Or Logic", instruction: "This uses && (and) or || (or) to check two things at once. Work out the result, then Run.", code: pick(rng, forms) };
+}
+
+function genForPrint(id, rng, mag) {
+  const n = rint(rng, 3, 10);
+  const forms = [
+    { code: `for (int i = 1; i <= ${n}; i = i + 1) {\n  System.out.println(i);\n}`, hint: `Count from 1 up to ${n}.` },
+    { code: `for (int i = ${n}; i >= 1; i = i - 1) {\n  System.out.println(i);\n}`, hint: `Count down from ${n} to 1.` },
+    { code: `for (int i = 2; i <= ${n * 2}; i = i + 2) {\n  System.out.println(i);\n}`, hint: `Print even numbers up to ${n * 2}.` },
+    { code: `for (int i = 1; i <= ${n}; i = i + 1) {\n  System.out.println("Star " + i);\n}`, hint: "Repeat a line and count along." }
+  ];
+  const f = pick(rng, forms);
+  return { title: "Loop It", instruction: `A for-loop repeats code. ${f.hint} Read it, then Run to watch it go.`, code: f.code };
+}
+
+function genForAccumulate(id, rng, mag) {
+  const n = rint(rng, 3, 10);
+  const k = rint(rng, 2, 12);
+  const forms = [
+    { code: `int total = 0;\nfor (int i = 1; i <= ${n}; i = i + 1) {\n  total = total + i;\n}\nSystem.out.println("Sum: " + total);`, hint: `Add up 1 + 2 + ... + ${n}.` },
+    { code: `for (int i = 1; i <= ${n}; i = i + 1) {\n  System.out.println(${k} + " x " + i + " = " + (${k} * i));\n}`, hint: `The ${k} times table.` },
+    { code: `int evens = 0;\nfor (int i = 1; i <= ${n * 2}; i = i + 1) {\n  if (i % 2 == 0) {\n    evens = evens + 1;\n  }\n}\nSystem.out.println("Evens: " + evens);`, hint: "Count the even numbers with a loop and an if." }
+  ];
+  const f = pick(rng, forms);
+  return { title: "Loop + Collect", instruction: `Loops can build up an answer step by step. ${f.hint} Read it, then Run.`, code: f.code };
+}
+
+function genWhile(id, rng, mag) {
+  const forms = [
+    () => { const n = rint(rng, 3, 9); return { code: `int i = ${n};\nwhile (i > 0) {\n  System.out.println(i);\n  i = i - 1;\n}\nSystem.out.println("Blast off!");`, hint: `Countdown from ${n}.` }; },
+    () => { const n = rint(rng, 3, 7); return { code: `int f = 1;\nint i = 1;\nwhile (i <= ${n}) {\n  f = f * i;\n  i = i + 1;\n}\nSystem.out.println("Factorial: " + f);`, hint: `Multiply 1 × 2 × ... × ${n}.` }; },
+    () => { const n = rint(rng, 3, 10); return { code: `int x = 1;\nint i = 0;\nwhile (i < ${n}) {\n  x = x * 2;\n  i = i + 1;\n}\nSystem.out.println("Doubled: " + x);`, hint: `Double the number ${n} times.` }; }
+  ];
+  const f = pick(rng, forms)();
+  return { title: "While Loop", instruction: `A while-loop repeats until its check becomes false. ${f.hint} Read it, then Run.`, code: f.code };
+}
+
+function genMaster(id, rng, mag) {
+  const n = rint(rng, 5, 12);
+  const forms = [
+    { code: `for (int i = 1; i <= ${n}; i = i + 1) {\n  if (i % 3 == 0) {\n    System.out.println("Fizz");\n  } else {\n    System.out.println(i);\n  }\n}`, hint: `Print 1 to ${n}, but "Fizz" for multiples of 3.` },
+    { code: `int total = 0;\nfor (int i = 1; i <= ${n}; i = i + 1) {\n  if (i % 2 == 0) {\n    total = total + i;\n  }\n}\nSystem.out.println("Sum of evens: " + total);`, hint: "Add up only the even numbers." },
+    { code: `for (int i = 1; i <= ${n}; i = i + 1) {\n  String word = "odd";\n  if (i % 2 == 0) {\n    word = "even";\n  }\n  System.out.println(i + " is " + word);\n}`, hint: "Label each number even or odd." }
+  ];
+  const f = pick(rng, forms);
+  return { title: "Master Challenge", instruction: `You've reached the tough ones! ${f.hint} Read carefully, then Run.`, code: f.code };
+}
+
+const BANDS = [
+  { to: 120,  gen: genVarsMath },
+  { to: 220,  gen: genConcatMath },
+  { to: 340,  gen: genConditionals },
+  { to: 460,  gen: genBoolean },
+  { to: 600,  gen: genForPrint },
+  { to: 760,  gen: genForAccumulate },
+  { to: 900,  gen: genWhile },
+  { to: 1000, gen: genMaster }
+];
+
+for (let id = 41; id <= 1000; id++) {
+  const rng = rngFor(id);
+  const mag = 5 + Math.floor(id / 40);           // grows ~6 → ~30
+  const band = BANDS.find(b => id <= b.to);
+  try {
+    const g = band.gen(id, rng, mag);
+    const out = runJava(g.code).replace(/\n+$/, "");
+    add({ title: g.title, instruction: g.instruction, startingCode: g.code, expectedOutput: out });
+  } catch (e) {
+    // Safety fallback — should never fire, but keeps the app running no matter what.
+    add({ title: "Practice", instruction: `Print the number ${id}.`, startingCode: `System.out.println(${id});`, expectedOutput: String(id) });
+  }
+}
+
+
+/* =========================================================================
+   PART 3 — THE APP (UI, progress, localStorage)
+   ========================================================================= */
+const STORAGE_KEY = "kidz_java_lab_v1";
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        completed: new Set(parsed.completed || []),
+        code: parsed.code || {},
+        current: parsed.current || 1,
+        certPrize: parsed.certPrize || "",
+        predict: parsed.predict || {},        // { levelId: 1 correct | 0 wrong } — first guess only
+        seen: new Set(parsed.seen || [])       // levels already run at least once
+      };
+    }
+  } catch (e) { /* ignore corrupt data */ }
+  return { completed: new Set(), code: {}, current: 1, certPrize: "", predict: {}, seen: new Set() };
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    completed: Array.from(state.completed),
+    code: state.code,
+    current: state.current,
+    certPrize: state.certPrize || "",
+    predict: state.predict || {},
+    seen: Array.from(state.seen || []),
+    // cached reward totals (always re-derived on load from completed levels)
+    points: totalPoints(),
+    dollars: totalDollars()
+  }));
+}
+
+function getLevel(id) { return levels.find(l => l.id === id); }
+
+function isUnlocked(id) {
+  return id === 1 || state.completed.has(id) || state.completed.has(id - 1);
+}
+
+/* ---------- DOM references ---------- */
+const el = {
+  grid: document.getElementById("levelGrid"),
+  progressLine: document.getElementById("progressLine"),
+  jumpInput: document.getElementById("jumpInput"),
+  jumpBtn: document.getElementById("jumpBtn"),
+  lessonTitle: document.getElementById("lessonTitle"),
+  instruction: document.getElementById("instruction"),
+  snipPalette: document.getElementById("snipPalette"),
+  editor: document.getElementById("editor"),
+  console: document.getElementById("console"),
+  expected: document.getElementById("expected"),
+  banner: document.getElementById("banner"),
+  runBtn: document.getElementById("runBtn"),
+  nextBtn: document.getElementById("nextBtn"),
+  prevBtn: document.getElementById("prevBtn"),
+  loadExample: document.getElementById("loadExample"),
+  clearBtn: document.getElementById("clearBtn"),
+  resetBtn: document.getElementById("resetBtn"),
+  // reward dashboard
+  pointsVal: document.getElementById("pointsVal"),
+  cashVal: document.getElementById("cashVal"),
+  moneyChip: document.getElementById("moneyChip"),
+  parentToggle: document.getElementById("parentToggle"),
+  rewardFill: document.getElementById("rewardFill"),
+  rewardPct: document.getElementById("rewardPct"),
+  claimBtn: document.getElementById("claimBtn"),
+  // reward popup + confetti
+  rewardOverlay: document.getElementById("rewardOverlay"),
+  popAward: document.getElementById("popAward"),
+  popStars: document.getElementById("popStars"),
+  popPoints: document.getElementById("popPoints"),
+  popCash: document.getElementById("popCash"),
+  popCashLine: document.getElementById("popCashLine"),
+  popCashWrap: document.getElementById("popCashWrap"),
+  popKidLine: document.getElementById("popKidLine"),
+  rewardClose: document.getElementById("rewardClose"),
+  confetti: document.getElementById("confetti"),
+  // certificate
+  certOverlay: document.getElementById("certOverlay"),
+  certCount: document.getElementById("certCount"),
+  certPrize: document.getElementById("certPrize"),
+  certDate: document.getElementById("certDate"),
+  printCert: document.getElementById("printCert"),
+  certClose: document.getElementById("certClose"),
+  // parent gate
+  gateOverlay: document.getElementById("gateOverlay"),
+  gateMsg: document.getElementById("gateMsg"),
+  gateQ: document.getElementById("gateQ"),
+  gateInput: document.getElementById("gateInput"),
+  gateErr: document.getElementById("gateErr"),
+  gateOk: document.getElementById("gateOk"),
+  gateCancel: document.getElementById("gateCancel"),
+  // predict-the-output
+  predictInput: document.getElementById("predictInput"),
+  predictFeedback: document.getElementById("predictFeedback"),
+  expectedHint: document.getElementById("expectedHint"),
+  // skill report
+  reportBtn: document.getElementById("reportBtn"),
+  reportOverlay: document.getElementById("reportOverlay"),
+  reportLevel: document.getElementById("reportLevel"),
+  reportSummary: document.getElementById("reportSummary"),
+  reportRows: document.getElementById("reportRows"),
+  reportPrint: document.getElementById("reportPrint"),
+  reportClose: document.getElementById("reportClose")
+};
+
+/* ---------- Concepts (for the skill report) ---------- */
+const CONCEPTS = [
+  { key: "print",   label: "Printing",          from: 1,   to: 10 },
+  { key: "textnum", label: "Text + Numbers",    from: 11,  to: 20 },
+  { key: "vars",    label: "Variables",         from: 21,  to: 40 },
+  { key: "arith",   label: "Arithmetic",        from: 41,  to: 120 },
+  { key: "msg",     label: "Building Messages", from: 121, to: 220 },
+  { key: "ifelse",  label: "If / Else",         from: 221, to: 340 },
+  { key: "logic",   label: "And / Or Logic",    from: 341, to: 460 },
+  { key: "forloop", label: "For Loops",         from: 461, to: 600 },
+  { key: "accum",   label: "Loops that Add Up", from: 601, to: 760 },
+  { key: "while",   label: "While Loops",       from: 761, to: 900 },
+  { key: "master",  label: "Master Challenges", from: 901, to: 1000 }
+];
+
+/* Money is hidden from kids by default; a parent unlocks it via the gate.
+   Session-only (resets each reload) so kids can't leave it revealed. */
+let parentMode = false;
+
+/* ---------- Reward system ---------- */
+const REWARD_GOAL = 40;                                   // dollars
+const TOTAL_LEVELS = levels.length;                       // 1000
+const DOLLARS_PER_LEVEL = REWARD_GOAL / TOTAL_LEVELS;     // $0.04
+
+// Difficulty tier 1..10 (each 100 levels). Tougher levels award more points.
+function tierOf(id) { return Math.min(10, Math.max(1, Math.ceil(id / 100))); }
+function pointsForLevel(id) { return 100 * tierOf(id); }  // 100 → 1000 pts as you climb
+
+function totalPoints() {
+  let sum = 0;
+  state.completed.forEach(id => { sum += pointsForLevel(id); });
+  return sum;
+}
+function totalDollars() { return Math.min(REWARD_GOAL, state.completed.size * DOLLARS_PER_LEVEL); }
+function rewardPercent(){ return Math.min(100, Math.round((state.completed.size / TOTAL_LEVELS) * 100)); }
+function fmtNum(n) { return n.toLocaleString("en-US"); }
+function fmtMoney(n){ return "$" + n.toFixed(2); }
+function allDone() { return state.completed.size >= TOTAL_LEVELS; }
+
+function renderReward() {
+  el.pointsVal.textContent = fmtNum(totalPoints());
+  el.cashVal.textContent = fmtMoney(totalDollars());
+  const pct = rewardPercent();
+  el.rewardFill.style.width = pct + "%";
+  el.rewardPct.textContent = pct + "%";
+  el.claimBtn.classList.toggle("show", allDone());
+  // Money is only visible in parent mode
+  el.moneyChip.style.display = parentMode ? "" : "none";
+  el.parentToggle.classList.toggle("on", parentMode);
+  el.parentToggle.textContent = parentMode ? "🙈 Hide $" : "👪 Parents: Show $";
+}
+
+// Per-tier confetti palettes + emoji sets so the party changes as kids climb.
+const TIER_COLORS = [
+  ["#74c0fc", "#a5d8ff", "#4dabf7"],                          // 1 cool blue
+  ["#69db7c", "#b2f2bb", "#40c057"],                          // 2 green
+  ["#ffd43b", "#ffe066", "#fab005"],                          // 3 yellow
+  ["#ffa94d", "#ffc078", "#fd7e14"],                          // 4 orange
+  ["#ff8787", "#ffc9c9", "#fa5252"],                          // 5 red
+  ["#f783ac", "#fcc2d7", "#e64980"],                          // 6 pink
+  ["#da77f2", "#eebefa", "#be4bdb"],                          // 7 purple
+  ["#845ef7", "#b197fc", "#7048e8"],                          // 8 violet
+  ["#3bc9db", "#66d9e8", "#ffd43b"],                          // 9 teal + gold
+  ["#ffd43b", "#ff6b6b", "#69db7c", "#4dabf7", "#da77f2"]     // 10 rainbow
+];
+const TIER_EMOJI = [
+  ["⭐", "✨"], ["⭐", "🎈"], ["🎉", "⭐"], ["🎉", "🎈", "✨"], ["🌟", "🎉"],
+  ["🌟", "🎊", "🎈"], ["💜", "🌟", "🎉"], ["🚀", "🌟", "🎊"], ["🏆", "🌟", "🎉"], ["🏆", "👑", "🎆", "🌈", "🎉"]
+];
+
+function showRewardPopup(id) {
+  const tier = tierOf(id);
+  el.popAward.textContent = "+" + pointsForLevel(id) + " Points!";
+  el.popStars.textContent = "⭐".repeat(tier);           // more stars as levels get tougher
+  el.popPoints.textContent = fmtNum(totalPoints());
+  el.popCash.textContent = fmtMoney(totalDollars());
+  // Kids see points + a cheer; parents (unlocked) also see the dollars
+  el.popCashLine.style.display = parentMode ? "" : "none";
+  el.popCashWrap.style.display = parentMode ? "" : "none";
+  el.popKidLine.style.display = parentMode ? "none" : "";
+  el.rewardOverlay.classList.add("show");
+  launchConfetti(tier);
+  playCelebration(tier);
+  screenShake(tier);
+}
+
+/* Confetti scales with tier: more pieces, more emoji, tier-colored, extra
+   fireworks-style burst on the biggest tiers. Pure CSS + emoji, no assets. */
+function launchConfetti(tier) {
+  const c = el.confetti;
+  c.innerHTML = "";
+  const colors = TIER_COLORS[tier - 1];
+  const emojis = TIER_EMOJI[tier - 1];
+  const emojiEvery = Math.max(3, 7 - Math.floor(tier / 2)); // more emoji at high tiers
+  const total = 90 + tier * 45;                             // 135 → 540 pieces
+  function burst(count, delayBase, fromCenter) {
+    for (let i = 0; i < count; i++) {
+      const s = document.createElement("i");
+      if (fromCenter) {
+        s.style.left = (40 + Math.random() * 20) + "vw";
+        s.style.animationDuration = (1.6 + Math.random() * 1.6) + "s";
+      } else {
+        s.style.left = (Math.random() * 100) + "vw";
+        s.style.animationDuration = (2.2 + Math.random() * 2.4) + "s";
+      }
+      s.style.animationDelay = (delayBase + Math.random() * 0.5) + "s";
+      if (i % emojiEvery === 0) {
+        s.className = "emoji";
+        s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        s.style.fontSize = (22 + tier * 2 + Math.random() * 10) + "px";
+      } else {
+        s.style.background = colors[i % colors.length];
+        if (i % 3 === 0) s.style.borderRadius = "50%";
+        s.style.transform = "rotate(" + Math.floor(Math.random() * 360) + "deg)";
+      }
+      c.appendChild(s);
+    }
+  }
+  burst(total, 0, false);
+  setTimeout(() => burst(Math.floor(total * 0.5), 0, false), 500);
+  if (tier >= 6) setTimeout(() => burst(60, 0, true), 250);  // fireworks fountain
+  c.classList.add("show");
+  setTimeout(() => c.classList.remove("show"), 4800 + tier * 200);
+}
+
+/* A quick screen shake on the higher tiers for extra excitement. */
+function screenShake(tier) {
+  if (tier < 4) return;
+  document.body.classList.remove("shake");
+  void document.body.offsetWidth;   // restart the animation
+  document.body.style.setProperty("--shake", (tier >= 8 ? 8 : 4) + "px");
+  document.body.classList.add("shake");
+  setTimeout(() => document.body.classList.remove("shake"), 500);
+}
+
+/* Fanfare grows richer as tiers rise: longer rising runs, higher octave,
+   a drum-like thump and sparkle on the big ones. Web Audio, fully offline. */
+let audioCtx = null;
+function playCelebration(tier) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const now = audioCtx.currentTime;
+    // Major-scale run; more notes and a higher top note as the tier climbs.
+    const scale = [523.25, 587.33, 659.25, 698.46, 783.99, 880.0, 987.77, 1046.5, 1174.7, 1318.5, 1568.0];
+    const noteCount = Math.min(scale.length, 3 + tier);
+    const step = tier >= 7 ? 0.075 : 0.1;
+    for (let i = 0; i < noteCount; i++) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = tier >= 8 ? "triangle" : (i === noteCount - 1 ? "triangle" : "sine");
+      osc.frequency.value = scale[i];
+      const t = now + i * step;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.26, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.38);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(t); osc.stop(t + 0.42);
+    }
+    // Sparkle shimmer at the end
+    const shimmer = audioCtx.createOscillator();
+    const sg = audioCtx.createGain();
+    shimmer.type = "triangle";
+    const st = now + noteCount * step;
+    shimmer.frequency.setValueAtTime(1568, st);
+    shimmer.frequency.exponentialRampToValueAtTime(1568 + tier * 180, st + 0.3);
+    sg.gain.setValueAtTime(0.0001, st);
+    sg.gain.exponentialRampToValueAtTime(0.14, st + 0.03);
+    sg.gain.exponentialRampToValueAtTime(0.0001, st + 0.55);
+    shimmer.connect(sg); sg.connect(audioCtx.destination);
+    shimmer.start(st); shimmer.stop(st + 0.6);
+    // Deep thump on the big tiers
+    if (tier >= 5) {
+      const bass = audioCtx.createOscillator();
+      const bg = audioCtx.createGain();
+      bass.type = "sine";
+      bass.frequency.setValueAtTime(160, now);
+      bass.frequency.exponentialRampToValueAtTime(60, now + 0.25);
+      bg.gain.setValueAtTime(0.0001, now);
+      bg.gain.exponentialRampToValueAtTime(0.3, now + 0.02);
+      bg.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+      bass.connect(bg); bg.connect(audioCtx.destination);
+      bass.start(now); bass.stop(now + 0.32);
+    }
+  } catch (e) { /* audio unavailable — silent fallback */ }
+}
+
+/* Certificate */
+function openCertificate() {
+  el.certCount.textContent = fmtNum(TOTAL_LEVELS);
+  el.certPrize.value = state.certPrize || "";
+  el.certDate.textContent = new Date().toLocaleDateString();
+  el.certOverlay.classList.add("show");
+}
+/* The certificate shows the $40 and is the parent voucher, so kids pass the
+   gate first (which also unlocks the money view for that session). */
+function requestCertificate() {
+  if (parentMode) { openCertificate(); return; }
+  openGate("To open the $40 reward certificate, please answer:", () => {
+    parentMode = true;
+    renderReward();
+    openCertificate();
+  });
+}
+
+/* ---------- Skill Report ----------
+   Progress (the bar) = levels finished. Understanding (the stars) = how often
+   the child correctly guessed the output BEFORE running, per concept. */
+function starGrade(acc, attempted) {
+  if (attempted === 0) return { stars: 0, label: "Not tested yet", tested: false };
+  if (acc >= 0.85 && attempted >= 2) return { stars: 3, label: "Excellent", tested: true };
+  if (acc >= 0.6) return { stars: 2, label: "Good", tested: true };
+  if (acc >= 0.35) return { stars: 1, label: "Getting there", tested: true };
+  return { stars: 1, label: "Still learning", tested: true };
+}
+
+function computeReport() {
+  return CONCEPTS.map(c => {
+    let completed = 0, attempted = 0, correct = 0;
+    for (let id = c.from; id <= c.to; id++) {
+      if (state.completed.has(id)) completed++;
+      const p = state.predict[id];
+      if (p !== undefined) { attempted++; if (p) correct++; }
+    }
+    const total = c.to - c.from + 1;
+    const acc = attempted ? correct / attempted : null;
+    return Object.assign({}, c, { total, completed, attempted, correct, acc }, starGrade(acc || 0, attempted));
+  });
+}
+
+function coderTitle(completed) {
+  if (completed >= 1000) return "🏆 Java Master";
+  if (completed >= 500) return "🚀 Pro Coder";
+  if (completed >= 200) return "💻 Coder";
+  if (completed >= 50) return "🔧 Builder";
+  if (completed >= 1) return "🧭 Explorer";
+  return "🌱 Just Starting";
+}
+
+function openReport() {
+  const rows = computeReport();
+  let attempted = 0, correct = 0;
+  for (const k in state.predict) { attempted++; if (state.predict[k]) correct++; }
+  const done = state.completed.size;
+  const accPct = attempted ? Math.round((correct / attempted) * 100) : null;
+
+  el.reportLevel.textContent = coderTitle(done);
+  el.reportSummary.innerHTML =
+    `Finished <b>${fmtNum(done)}</b> of <b>${fmtNum(TOTAL_LEVELS)}</b> levels` +
+    (attempted
+      ? ` &nbsp;•&nbsp; Guessed the output right on <b>${accPct}%</b> of <b>${attempted}</b> tries`
+      : ` &nbsp;•&nbsp; No output guesses yet — try 🔮 Guess mode!`);
+
+  el.reportRows.innerHTML = "";
+  rows.forEach(r => {
+    const pct = Math.round((r.completed / r.total) * 100);
+    const stars = r.tested
+      ? "⭐".repeat(r.stars) + "☆".repeat(3 - r.stars)
+      : '<span class="untested">—</span>';
+    const subLabel = r.tested
+      ? `${r.label} · ${Math.round(r.acc * 100)}% of ${r.attempted}`
+      : "guess to grade";
+    const row = document.createElement("div");
+    row.className = "rep-row";
+    row.innerHTML =
+      `<div class="rep-name">${r.label}</div>` +
+      `<div class="rep-prog">` +
+        `<div class="track"><div class="fill" style="width:${pct}%"></div></div>` +
+        `<div class="txt">${r.completed}/${r.total} levels (${pct}%)</div>` +
+      `</div>` +
+      `<div class="rep-stars">${stars}<span class="lvl">${subLabel}</span></div>`;
+    el.reportRows.appendChild(row);
+  });
+  el.reportOverlay.classList.add("show");
+}
+
+/* Parent gate — a math challenge that runs `onSuccess` when answered correctly.
+   Reused for both revealing money and resetting progress. */
+let gateAnswer = 0;
+let gateOnSuccess = null;
+function openGate(message, onSuccess) {
+  const a = 6 + Math.floor(Math.random() * 7);  // 6..12
+  const b = 6 + Math.floor(Math.random() * 7);  // 6..12
+  gateAnswer = a * b;
+  gateOnSuccess = onSuccess;
+  el.gateMsg.textContent = message;
+  el.gateQ.textContent = a + " × " + b + " = ?";
+  el.gateInput.value = "";
+  el.gateErr.textContent = "";
+  el.gateOverlay.classList.add("show");
+  el.gateInput.focus();
+}
+function tryGate() {
+  if (parseInt(el.gateInput.value, 10) === gateAnswer) {
+    el.gateOverlay.classList.remove("show");
+    if (gateOnSuccess) gateOnSuccess();
+  } else {
+    el.gateErr.textContent = "That's not right. Try again.";
+    el.gateInput.value = "";
+    el.gateInput.focus();
+  }
+}
+function doReset() {
+  state = { completed: new Set(), code: {}, current: 1, certPrize: "", predict: {}, seen: new Set() };
+  saveState();
+  renderReward();
+  renderGrid();
+  goToLevel(1);
+}
+
+/* ---------- Snippet palette ---------- */
+const SNIPPETS = [
+  { label: 'println', insert: 'System.out.println();' },
+  { label: '" "', insert: '""' },
+  { label: 'int box', insert: 'int x = 5;' },
+  { label: '+', insert: ' + ' },
+  { label: 'if', insert: 'if (x > 5) {\n  \n}' },
+  { label: 'for', insert: 'for (int i = 1; i <= 5; i = i + 1) {\n  \n}' },
+  { label: ';', insert: ';' }
+];
+
+function buildPalette() {
+  SNIPPETS.forEach(s => {
+    const b = document.createElement("button");
+    b.className = "snip-btn";
+    b.textContent = s.label;
+    b.title = s.insert.replace(/\n/g, " ");
+    b.addEventListener("click", () => insertAtCursor(s.insert));
+    el.snipPalette.appendChild(b);
+  });
+}
+
+function insertAtCursor(text) {
+  const ta = el.editor;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
+  const caret = start + text.length;
+  ta.focus();
+  ta.setSelectionRange(caret, caret);
+  persistCode();
+}
+
+/* ---------- Level grid ---------- */
+/* With 1000 levels we build the grid ONCE, then only toggle classes/badges on
+   each render — rebuilding 1000 nodes every keystroke would be janky. */
+let gridBuilt = false;
+const gridBtns = {};
+function buildGridOnce() {
+  const frag = document.createDocumentFragment();
+  levels.forEach(l => {
+    const b = document.createElement("button");
+    b.className = "lvl-btn";
+    const num = document.createElement("span");
+    num.textContent = l.id;
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    b.appendChild(num);
+    b.appendChild(badge);
+    b._badge = badge;
+    b.addEventListener("click", () => goToLevel(l.id));
+    gridBtns[l.id] = b;
+    frag.appendChild(b);
+  });
+  el.grid.appendChild(frag);
+  gridBuilt = true;
+}
+function renderGrid() {
+  if (!gridBuilt) buildGridOnce();
+  levels.forEach(l => {
+    const b = gridBtns[l.id];
+    const completed = state.completed.has(l.id);
+    const unlocked = isUnlocked(l.id);
+    b.className = "lvl-btn" +
+      (completed ? " completed" : "") +
+      (l.id === state.current ? " current" : "") +
+      (!unlocked ? " locked" : "");
+    b.disabled = !unlocked;
+    b._badge.textContent = !unlocked ? "🔒" : (completed ? "⭐" : "");
+  });
+  const done = state.completed.size;
+  el.progressLine.innerHTML = `⭐ Completed <b>${done}</b> of <b>${levels.length}</b> levels`;
+  // Keep the current level visible in the scrollable grid
+  const cur = gridBtns[state.current];
+  if (cur) cur.scrollIntoView({ block: "nearest" });
+}
+
+/* ---------- Load a level ---------- */
+function goToLevel(id) {
+  if (!isUnlocked(id)) return;
+  state.current = id;
+  const lvl = getLevel(id);
+  el.lessonTitle.textContent = `Level ${id}: ${lvl.title}`;
+  el.instruction.innerHTML = lvl.instruction;
+  el.expected.textContent = JSON.stringify(lvl.expectedOutput);
+  el.editor.value = (state.code[id] !== undefined) ? state.code[id] : lvl.startingCode;
+  el.console.innerHTML = '<span class="muted">Press "Run Code" to see what your Java does...</span>';
+  el.banner.classList.remove("show");
+  // Reset prediction UI; hide the goal output until they've run once (keeps guessing honest)
+  el.predictInput.value = "";
+  el.predictFeedback.innerHTML = "";
+  el.expectedHint.classList.add("hidden");
+  updateNav();
+  renderGrid();
+  saveState();
+}
+
+function updateNav() {
+  el.prevBtn.disabled = state.current <= 1;
+  const nextId = state.current + 1;
+  el.nextBtn.disabled = !(nextId <= levels.length && isUnlocked(nextId));
+}
+
+/* ---------- Output comparison ---------- */
+function normalize(s) {
+  return s.split("\n").map(line => line.replace(/[ \t]+$/, "")).join("\n").replace(/\n+$/, "").replace(/^\n+/, "");
+}
+
+/* ---------- Run ---------- */
+function runCode() {
+  const code = el.editor.value;
+  persistCode();
+  let output = "", errMsg = null, errLine = null;
+  try {
+    output = runJava(code);
+  } catch (e) {
+    output = e.partial || "";
+    errMsg = e.friendly ? e.message : ("Something went wrong: " + e.message);
+    errLine = e.line;
+  }
+
+  // Render console
+  el.console.innerHTML = "";
+  if (output.length) {
+    const pre = document.createElement("span");
+    pre.textContent = output.endsWith("\n") ? output.slice(0, -1) : output;
+    el.console.appendChild(pre);
+  }
+  if (errMsg) {
+    if (output.length) el.console.appendChild(document.createTextNode("\n"));
+    const er = document.createElement("span");
+    er.className = "err";
+    er.textContent = "⚠ " + errMsg + (errLine ? "  (line " + errLine + ")" : "");
+    el.console.appendChild(er);
+  } else if (!output.length) {
+    el.console.innerHTML = '<span class="muted">(Your code printed nothing yet.)</span>';
+  }
+
+  // Reveal the goal output now that they've run
+  el.expectedHint.classList.remove("hidden");
+
+  // Prediction scoring — only counts the FIRST run of a level (before the
+  // output was ever revealed), so a guess is an honest test of understanding.
+  const firstRun = !state.seen.has(state.current);
+  scorePrediction(firstRun, output, errMsg);
+  state.seen.add(state.current);
+
+  // Check success
+  const lvl = getLevel(state.current);
+  if (!errMsg && normalize(output) === normalize(lvl.expectedOutput)) {
+    markComplete(lvl.id);
+  } else if (!errMsg) {
+    el.banner.classList.remove("show");
+  }
+  saveState();
+}
+
+/* Compares the child's guess to what actually printed and records the result
+   for the skill report (first attempt only). Never blocks level completion. */
+function scorePrediction(firstRun, output, errMsg) {
+  const guess = el.predictInput.value.trim();
+  if (!firstRun) {
+    if (guess) el.predictFeedback.innerHTML = '<span class="pf-tip">👀 (Guesses only count on your first run of a level.)</span>';
+    return;
+  }
+  if (!guess) {
+    el.predictFeedback.innerHTML = '<span class="pf-tip">💡 Tip: next time, type a guess first to test your brain!</span>';
+    return;
+  }
+  const correct = !errMsg && normalize(guess) === normalize(output);
+  state.predict[state.current] = correct ? 1 : 0;
+  el.predictFeedback.innerHTML = correct
+    ? '<span class="pf-ok">🎯 Spot on! You really understood the code!</span>'
+    : '<span class="pf-no">Good try! Compare your guess with the real output above. 👀</span>';
+}
+
+function markComplete(id) {
+  const already = state.completed.has(id);
+  state.completed.add(id);
+  saveState();
+  renderGrid();
+  renderReward();
+  updateNav();
+  el.banner.classList.add("show");
+  const ok = document.createElement("div");
+  ok.className = "ok";
+  ok.textContent = already ? "✓ Correct again! Well done." : "✓ Perfect! Level " + id + " complete!";
+  el.console.appendChild(document.createTextNode("\n"));
+  el.console.appendChild(ok);
+
+  // Reward only for a brand-new completion (not for re-running a solved level)
+  if (!already) showRewardPopup(id);
+}
+
+/* ---------- Persist current code ---------- */
+function persistCode() {
+  state.code[state.current] = el.editor.value;
+  saveState();
+}
+
+/* ---------- Wire up buttons ---------- */
+el.runBtn.addEventListener("click", runCode);
+el.editor.addEventListener("input", () => { state.code[state.current] = el.editor.value; });
+el.editor.addEventListener("blur", saveState);
+
+// Allow Tab to insert two spaces instead of leaving the textarea
+el.editor.addEventListener("keydown", (e) => {
+  if (e.key === "Tab") {
+    e.preventDefault();
+    insertAtCursor("  ");
+  }
+});
+
+el.nextBtn.addEventListener("click", () => {
+  const nextId = state.current + 1;
+  if (nextId <= levels.length && isUnlocked(nextId)) goToLevel(nextId);
+});
+
+// Jump to a level (only ones already unlocked)
+function doJump() {
+  const id = parseInt(el.jumpInput.value, 10);
+  if (!id || id < 1 || id > levels.length) return;
+  if (isUnlocked(id)) { goToLevel(id); el.jumpInput.value = ""; }
+  else alert("Level " + id + " is still locked! Finish the earlier levels first. 🔒");
+}
+el.jumpBtn.addEventListener("click", doJump);
+el.jumpInput.addEventListener("keydown", (e) => { if (e.key === "Enter") doJump(); });
+el.prevBtn.addEventListener("click", () => {
+  if (state.current > 1) goToLevel(state.current - 1);
+});
+el.loadExample.addEventListener("click", () => {
+  const lvl = getLevel(state.current);
+  el.editor.value = lvl.startingCode;
+  persistCode();
+  el.editor.focus();
+});
+el.clearBtn.addEventListener("click", () => {
+  el.editor.value = "";
+  persistCode();
+  el.editor.focus();
+});
+// Reset now goes through a parent gate so kids can't erase earnings by accident
+el.resetBtn.addEventListener("click", () =>
+  openGate("To erase all progress and earnings, please answer:", doReset));
+
+// Parent money toggle: unlock $ view via the gate; hide again with one click
+el.parentToggle.addEventListener("click", () => {
+  if (parentMode) { parentMode = false; renderReward(); }
+  else openGate("To show the money rewards, please answer:", () => { parentMode = true; renderReward(); });
+});
+
+el.gateOk.addEventListener("click", tryGate);
+el.gateInput.addEventListener("keydown", (e) => { if (e.key === "Enter") tryGate(); });
+el.gateCancel.addEventListener("click", () => el.gateOverlay.classList.remove("show"));
+
+// Reward popup
+el.rewardClose.addEventListener("click", () => {
+  el.rewardOverlay.classList.remove("show");
+  if (allDone()) requestCertificate(); // celebrate the final level with the certificate
+});
+
+// Skill report
+el.reportBtn.addEventListener("click", openReport);
+el.reportClose.addEventListener("click", () => el.reportOverlay.classList.remove("show"));
+el.reportPrint.addEventListener("click", () => window.print());
+el.reportOverlay.addEventListener("click", (e) => { if (e.target === el.reportOverlay) el.reportOverlay.classList.remove("show"); });
+
+// Claim + certificate
+el.claimBtn.addEventListener("click", requestCertificate);
+el.printCert.addEventListener("click", () => window.print());
+el.certClose.addEventListener("click", () => el.certOverlay.classList.remove("show"));
+el.certPrize.addEventListener("input", () => { state.certPrize = el.certPrize.value; saveState(); });
+
+// Close overlays by clicking the dark backdrop (not the parent gate — that needs a choice)
+[el.rewardOverlay, el.certOverlay].forEach(ov => {
+  ov.addEventListener("click", (e) => { if (e.target === ov) ov.classList.remove("show"); });
+});
+
+/* ---------- Start ---------- */
+buildPalette();
+renderGrid();
+renderReward();
+goToLevel(state.current || 1);
+</script>
+</body>
+</html>
