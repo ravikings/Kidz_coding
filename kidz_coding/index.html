@@ -251,6 +251,30 @@
     background: var(--warn); color: #fff; font-size: 16px; padding: 8px 16px;
   }
 
+  /* ===== Profile Setup ===== */
+  .profile-card {
+    background: linear-gradient(90deg,#e7f5ff,#d0ebff);
+    border: 3px solid #a5d8ff; border-radius: 16px;
+    padding: 12px 18px; display: flex; align-items: center; gap: 14px;
+    flex-wrap: wrap; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .profile-avatar-preview {
+    font-size: 36px; background: #fff; border-radius: 50%;
+    width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+    border: 3px solid #4c6ef5;
+  }
+  #profileName {
+    font-family: var(--ui-font); font-size: 18px; font-weight: bold; padding: 8px 12px;
+    border: 2px solid #a5d8ff; border-radius: 10px; color: var(--ink); flex: 1; min-width: 140px;
+  }
+  .avatar-picker { display: flex; gap: 6px; flex-wrap: wrap; }
+  .avatar-btn {
+    font-size: 22px; background: #fff; border: 2px solid #dbe4ff; border-radius: 10px;
+    padding: 6px 8px; cursor: pointer;
+  }
+  .avatar-btn:hover { background: #f1f3f5; }
+  .avatar-btn.selected { border-color: #4c6ef5; background: #d0ebff; }
+
   /* ===== Reward Dashboard ===== */
   .reward-dash { max-width: 1500px; margin: 0 auto; padding: 14px 18px 0; }
   .reward-card {
@@ -302,6 +326,23 @@
   .reward-pop .pts { color:#3b5bdb; font-size: 34px; font-weight:bold; }
   .reward-pop .cash { color:#2b8a3e; font-size: 26px; font-weight:bold; margin-top:6px; }
   .reward-pop .total { font-size:18px; color:#495057; margin-top:14px; }
+
+  /* The reward popup is a corner toast, not a full-screen blocker — kids
+     should still be able to see their Run result / console behind it. */
+  #rewardOverlay {
+    background: transparent; align-items: flex-start; justify-content: flex-end;
+    padding: 24px; pointer-events: none;
+  }
+  #rewardOverlay .modal {
+    pointer-events: auto; max-width: 320px; padding: 20px 22px;
+    margin-top: 8px;
+  }
+  #rewardOverlay .reward-pop .big { font-size: 34px; }
+  #rewardOverlay .reward-pop .pts { font-size: 26px; }
+  #rewardOverlay .reward-pop .cash { font-size: 20px; }
+  @media (max-width: 900px) {
+    #rewardOverlay { justify-content: center; padding: 12px; }
+  }
 
   /* confetti */
   .confetti { position:fixed; inset:0; pointer-events:none; z-index:120; overflow:hidden; display:none; }
@@ -383,6 +424,25 @@
   .pf-tip { color:#a5d8ff; }
   .expected-hint.hidden { display:none; }
 
+  /* quick-check challenge (shown when a first-guess was wrong/blank) */
+  .challenge-box {
+    margin-top: 14px; background: rgba(255,166,0,0.12); border: 2px solid #ffa94d;
+    border-radius: 12px; padding: 14px 16px;
+  }
+  .challenge-box.hidden { display: none; }
+  .challenge-title { font-size: 17px; font-weight: bold; color: #ffd8a8; margin-bottom: 4px; }
+  .challenge-sub { font-size: 14px; color: #dfe6f5; margin-bottom: 10px; }
+  .challenge-code {
+    background: #0e1c30; color: #b3f5c8; font-family: var(--code-font); font-size: 14px;
+    padding: 10px 12px; border-radius: 8px; overflow-x: auto; margin: 0 0 10px; white-space: pre;
+  }
+  .challenge-label { display: block; font-size: 14px; color: #dfe6f5; margin-bottom: 6px; font-weight: bold; }
+  #challengeInput {
+    width: 100%; font-family: var(--code-font); font-size: 15px; padding: 8px; border-radius: 8px;
+    border: 2px solid #ffa94d; background: #0e1c30; color: #b3f5c8; resize: vertical; min-height: 44px;
+  }
+  #challengeFeedback { margin: 8px 0; font-size: 15px; min-height: 18px; }
+
   /* skill report */
   .report { max-width:660px; width:100%; text-align:left; max-height:88vh; overflow-y:auto; }
   .report h2 { color:var(--accent-dark); text-align:center; margin-bottom:4px; }
@@ -418,6 +478,16 @@
     <h1>🚀 Kidz Java Coding Lab</h1>
     <p>Learn real Java, one tiny step at a time!</p>
   </header>
+
+  <!-- PROFILE SETUP -->
+  <div class="reward-dash">
+    <div class="profile-card" id="profileCard">
+      <span class="profile-avatar-preview" id="avatarPreview">🦊</span>
+      <input id="profileName" type="text" maxlength="20" placeholder="Type your name..." />
+      <div class="avatar-picker" id="avatarPicker"></div>
+      <button class="reward-toggle" id="soundToggle">🔊 Sound: On</button>
+    </div>
+  </div>
 
   <!-- REWARD DASHBOARD -->
   <div class="reward-dash">
@@ -477,6 +547,17 @@
       <div class="expected-hint hidden" id="expectedHint">Goal output: <span id="expected"></span></div>
       <div class="console" id="console"><span class="muted">Press "Run Code" to see what your Java does...</span></div>
       <button class="btn btn-run" id="runBtn">▶ Run Code</button>
+
+      <div class="challenge-box hidden" id="challengeBox">
+        <div class="challenge-title">🧠 Quick Check — prove you really read it!</div>
+        <div class="challenge-sub">Your guess was off, so here's the <b>same idea with different numbers</b>. Work it out to unlock the next level.</div>
+        <pre class="challenge-code" id="challengeCode"></pre>
+        <label class="challenge-label">What will THIS print?</label>
+        <textarea id="challengeInput" spellcheck="false" placeholder="Type the new output here..."></textarea>
+        <div id="challengeFeedback"></div>
+        <button class="btn btn-secondary" id="challengeCheck">✅ Check My Answer</button>
+      </div>
+
       <div style="margin-top:12px; display:flex; gap:10px;">
         <button class="btn btn-secondary" id="prevBtn" style="flex:1;">◀ Back</button>
         <button class="btn btn-next" id="nextBtn" style="flex:2;">Next Level ▶</button>
@@ -1240,6 +1321,7 @@ for (let id = 41; id <= 1000; id++) {
    PART 3 — THE APP (UI, progress, localStorage)
    ========================================================================= */
 const STORAGE_KEY = "kidz_java_lab_v1";
+const AVATARS = ["🦊", "🐱", "🐶", "🐼", "🦁", "🐸", "🐵", "🦄", "🐙", "🤖", "👾", "🚀"];
 
 let state = loadState();
 
@@ -1254,11 +1336,14 @@ function loadState() {
         current: parsed.current || 1,
         certPrize: parsed.certPrize || "",
         predict: parsed.predict || {},        // { levelId: 1 correct | 0 wrong } — first guess only
-        seen: new Set(parsed.seen || [])       // levels already run at least once
+        seen: new Set(parsed.seen || []),      // levels already run at least once
+        profileName: parsed.profileName || "",
+        avatar: parsed.avatar || AVATARS[0],
+        soundOn: parsed.soundOn !== undefined ? parsed.soundOn : true
       };
     }
   } catch (e) { /* ignore corrupt data */ }
-  return { completed: new Set(), code: {}, current: 1, certPrize: "", predict: {}, seen: new Set() };
+  return { completed: new Set(), code: {}, current: 1, certPrize: "", predict: {}, seen: new Set(), profileName: "", avatar: AVATARS[0], soundOn: true };
 }
 
 function saveState() {
@@ -1269,6 +1354,9 @@ function saveState() {
     certPrize: state.certPrize || "",
     predict: state.predict || {},
     seen: Array.from(state.seen || []),
+    profileName: state.profileName || "",
+    avatar: state.avatar || AVATARS[0],
+    soundOn: state.soundOn !== undefined ? state.soundOn : true,
     // cached reward totals (always re-derived on load from completed levels)
     points: totalPoints(),
     dollars: totalDollars()
@@ -1283,6 +1371,11 @@ function isUnlocked(id) {
 
 /* ---------- DOM references ---------- */
 const el = {
+  // profile
+  profileName: document.getElementById("profileName"),
+  avatarPreview: document.getElementById("avatarPreview"),
+  avatarPicker: document.getElementById("avatarPicker"),
+  soundToggle: document.getElementById("soundToggle"),
   grid: document.getElementById("levelGrid"),
   progressLine: document.getElementById("progressLine"),
   jumpInput: document.getElementById("jumpInput"),
@@ -1338,6 +1431,12 @@ const el = {
   predictInput: document.getElementById("predictInput"),
   predictFeedback: document.getElementById("predictFeedback"),
   expectedHint: document.getElementById("expectedHint"),
+  // quick-check challenge
+  challengeBox: document.getElementById("challengeBox"),
+  challengeCode: document.getElementById("challengeCode"),
+  challengeInput: document.getElementById("challengeInput"),
+  challengeFeedback: document.getElementById("challengeFeedback"),
+  challengeCheck: document.getElementById("challengeCheck"),
   // skill report
   reportBtn: document.getElementById("reportBtn"),
   reportOverlay: document.getElementById("reportOverlay"),
@@ -1418,6 +1517,10 @@ const TIER_EMOJI = [
   ["🌟", "🎊", "🎈"], ["💜", "🌟", "🎉"], ["🚀", "🌟", "🎊"], ["🏆", "🌟", "🎉"], ["🏆", "👑", "🎆", "🌈", "🎉"]
 ];
 
+/* Confetti/sound/shake are deliberately NOT fired here — they wait until the
+   kid clicks "Keep Going ▶" (rewardClose), so the celebration lands right as
+   they move on to the next level instead of stealing attention mid-review. */
+let pendingCelebrationTier = null;
 function showRewardPopup(id) {
   const tier = tierOf(id);
   el.popAward.textContent = "+" + pointsForLevel(id) + " Points!";
@@ -1429,9 +1532,7 @@ function showRewardPopup(id) {
   el.popCashWrap.style.display = parentMode ? "" : "none";
   el.popKidLine.style.display = parentMode ? "none" : "";
   el.rewardOverlay.classList.add("show");
-  launchConfetti(tier);
-  playCelebration(tier);
-  screenShake(tier);
+  pendingCelebrationTier = tier;
 }
 
 /* Confetti scales with tier: more pieces, more emoji, tier-colored, extra
@@ -1487,6 +1588,7 @@ function screenShake(tier) {
    a drum-like thump and sparkle on the big ones. Web Audio, fully offline. */
 let audioCtx = null;
 function playCelebration(tier) {
+  if (!state.soundOn) return;
   try {
     audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === "suspended") audioCtx.resume();
@@ -1658,6 +1760,38 @@ function doReset() {
   goToLevel(1);
 }
 
+/* ---------- Profile (name, avatar, sound) ---------- */
+function buildAvatarPicker() {
+  el.avatarPicker.innerHTML = "";
+  AVATARS.forEach(a => {
+    const b = document.createElement("button");
+    b.className = "avatar-btn" + (a === state.avatar ? " selected" : "");
+    b.textContent = a;
+    b.addEventListener("click", () => {
+      state.avatar = a;
+      saveState();
+      renderProfile();
+    });
+    el.avatarPicker.appendChild(b);
+  });
+}
+function renderProfile() {
+  el.profileName.value = state.profileName || "";
+  el.avatarPreview.textContent = state.avatar || AVATARS[0];
+  Array.from(el.avatarPicker.children).forEach(b => b.classList.toggle("selected", b.textContent === state.avatar));
+  el.soundToggle.textContent = state.soundOn ? "🔊 Sound: On" : "🔇 Sound: Off";
+  el.soundToggle.classList.toggle("on", state.soundOn);
+}
+el.profileName.addEventListener("input", () => {
+  state.profileName = el.profileName.value;
+  saveState();
+});
+el.soundToggle.addEventListener("click", () => {
+  state.soundOn = !state.soundOn;
+  saveState();
+  renderProfile();
+});
+
 /* ---------- Snippet palette ---------- */
 const SNIPPETS = [
   { label: 'println', insert: 'System.out.println();' },
@@ -1749,6 +1883,8 @@ function goToLevel(id) {
   el.predictInput.value = "";
   el.predictFeedback.innerHTML = "";
   el.expectedHint.classList.add("hidden");
+  clearChallenge();
+  updateRunGate();
   updateNav();
   renderGrid();
   saveState();
@@ -1757,13 +1893,23 @@ function goToLevel(id) {
 function updateNav() {
   el.prevBtn.disabled = state.current <= 1;
   const nextId = state.current + 1;
-  el.nextBtn.disabled = !(nextId <= levels.length && isUnlocked(nextId));
+  el.nextBtn.disabled = !(nextId <= levels.length && isUnlocked(nextId)) || challengeActive;
 }
 
 /* ---------- Output comparison ---------- */
 function normalize(s) {
   return s.split("\n").map(line => line.replace(/[ \t]+$/, "")).join("\n").replace(/\n+$/, "").replace(/^\n+/, "");
 }
+
+/* ---------- Run gate ----------
+   On a level's first attempt, kids must type a guess in the predict box
+   before the Run button unlocks — this makes "read the code, predict the
+   output" happen before the answer is checked, instead of being optional. */
+function updateRunGate() {
+  const firstRun = !state.seen.has(state.current);
+  el.runBtn.disabled = firstRun && !el.predictInput.value.trim();
+}
+el.predictInput.addEventListener("input", updateRunGate);
 
 /* ---------- Run ---------- */
 function runCode() {
@@ -1801,13 +1947,14 @@ function runCode() {
   // Prediction scoring — only counts the FIRST run of a level (before the
   // output was ever revealed), so a guess is an honest test of understanding.
   const firstRun = !state.seen.has(state.current);
-  scorePrediction(firstRun, output, errMsg);
+  const guessVerdict = scorePrediction(firstRun, output, errMsg);
   state.seen.add(state.current);
+  updateRunGate();
 
   // Check success
   const lvl = getLevel(state.current);
   if (!errMsg && normalize(output) === normalize(lvl.expectedOutput)) {
-    markComplete(lvl.id);
+    markComplete(lvl.id, firstRun && guessVerdict !== true);
   } else if (!errMsg) {
     el.banner.classList.remove("show");
   }
@@ -1815,37 +1962,133 @@ function runCode() {
 }
 
 /* Compares the child's guess to what actually printed and records the result
-   for the skill report (first attempt only). Never blocks level completion. */
+   for the skill report (first attempt only). Never blocks level completion —
+   but returns the verdict so runCode() can decide whether a quick-check
+   challenge is needed (true = correct, false = wrong guess, null = no guess
+   made / doesn't count). */
 function scorePrediction(firstRun, output, errMsg) {
   const guess = el.predictInput.value.trim();
   if (!firstRun) {
     if (guess) el.predictFeedback.innerHTML = '<span class="pf-tip">👀 (Guesses only count on your first run of a level.)</span>';
-    return;
+    return null;
   }
   if (!guess) {
     el.predictFeedback.innerHTML = '<span class="pf-tip">💡 Tip: next time, type a guess first to test your brain!</span>';
-    return;
+    return null;
   }
   const correct = !errMsg && normalize(guess) === normalize(output);
   state.predict[state.current] = correct ? 1 : 0;
   el.predictFeedback.innerHTML = correct
     ? '<span class="pf-ok">🎯 Spot on! You really understood the code!</span>'
     : '<span class="pf-no">Good try! Compare your guess with the real output above. 👀</span>';
+  return correct;
 }
 
-function markComplete(id) {
+/* =========================================================================
+   QUICK-CHECK CHALLENGE
+   A kid can win a level just by copying the "Goal output" hint once it's
+   revealed, without ever really reading the code. So: if their FIRST guess
+   was wrong (or skipped), we don't let them coast to "Next Level" — instead
+   we swap the numbers in their solved code for new ones, re-run it for real
+   (so the new answer is always correct/guaranteed), and make them predict
+   THAT before Next unlocks. Guessing right the first time skips this
+   entirely — the challenge is the cost of not engaging with the guess box.
+   ========================================================================= */
+let challengeActive = false;
+let challengeExpected = "";
+let challengeAttempts = 0;
+
+function numberVariant(code) {
+  // Protect for-loop headers (bounds/step) so we never risk turning a loop
+  // into something absurd — only vary numbers used in values/output.
+  const loopHeaders = [];
+  const protectedCode = code.replace(/for\s*\([^)]*\)/g, (m) => {
+    loopHeaders.push(m);
+    return ` ${loopHeaders.length - 1} `;
+  });
+  let changed = false;
+  const varied = protectedCode.replace(/\b\d+\b/g, (m) => {
+    const n = parseInt(m, 10);
+    const delta = Math.max(1, Math.round(n * 0.4));
+    let next = n + (Math.random() < 0.5 ? -1 : 1) * (1 + Math.floor(Math.random() * delta));
+    if (next < 0) next = Math.abs(next);
+    if (next === n) next = n + 2;
+    changed = true;
+    return String(next);
+  });
+  if (!changed) return null;
+  return varied.replace(/ (\d+) /g, (_, i) => loopHeaders[Number(i)]);
+}
+
+function startChallenge(lvl) {
+  const code = state.code[lvl.id] !== undefined ? state.code[lvl.id] : lvl.startingCode;
+  const variantCode = numberVariant(code);
+  if (!variantCode) return; // nothing safe to vary — let them through
+  let variantOutput;
+  try {
+    variantOutput = runJava(variantCode);
+  } catch (e) {
+    return; // variant doesn't run cleanly — don't block on a broken challenge
+  }
+  challengeExpected = normalize(variantOutput);
+  challengeAttempts = 0;
+  el.challengeCode.textContent = variantCode;
+  el.challengeInput.value = "";
+  el.challengeFeedback.innerHTML = "";
+  el.challengeBox.classList.remove("hidden");
+  challengeActive = true;
+  updateNav();
+}
+
+function clearChallenge() {
+  challengeActive = false;
+  el.challengeBox.classList.add("hidden");
+  el.challengeInput.value = "";
+  el.challengeFeedback.innerHTML = "";
+}
+
+function checkChallenge() {
+  const guess = normalize(el.challengeInput.value.trim());
+  if (guess === challengeExpected) {
+    el.challengeFeedback.innerHTML = '<span class="pf-ok">🎯 Yes! Now you really understand it — onward!</span>';
+    challengeActive = false;
+    updateNav();
+    setTimeout(clearChallenge, 900);
+    return;
+  }
+  challengeAttempts++;
+  if (challengeAttempts === 1) {
+    el.challengeFeedback.innerHTML = '<span class="pf-no">Not quite — walk through the code line by line, then try again.</span>';
+  } else if (challengeAttempts === 2) {
+    el.challengeFeedback.innerHTML = '<span class="pf-no">Still not it. 🔍 Check each number carefully — did it change what gets added, multiplied, or compared?</span>';
+  } else {
+    el.challengeFeedback.innerHTML = `<span class="pf-tip">Here's the answer: <b>${challengeExpected}</b>. Type it in to confirm you've got it, then you can move on.</span>`;
+  }
+}
+el.challengeCheck.addEventListener("click", checkChallenge);
+el.challengeInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); checkChallenge(); }
+});
+
+function markComplete(id, needsChallenge) {
   const already = state.completed.has(id);
   state.completed.add(id);
   saveState();
   renderGrid();
   renderReward();
-  updateNav();
   el.banner.classList.add("show");
   const ok = document.createElement("div");
   ok.className = "ok";
   ok.textContent = already ? "✓ Correct again! Well done." : "✓ Perfect! Level " + id + " complete!";
   el.console.appendChild(document.createTextNode("\n"));
   el.console.appendChild(ok);
+
+  // A wrong/blank first guess means they may have just copied the revealed
+  // answer instead of reading the code — make them prove it on a variant
+  // before Next unlocks, instead of letting them coast to the next level.
+  if (needsChallenge) startChallenge(getLevel(id));
+  else clearChallenge();
+  updateNav();
 
   // Reward only for a brand-new completion (not for re-running a solved level)
   if (!already) showRewardPopup(id);
@@ -1912,9 +2155,16 @@ el.gateOk.addEventListener("click", tryGate);
 el.gateInput.addEventListener("keydown", (e) => { if (e.key === "Enter") tryGate(); });
 el.gateCancel.addEventListener("click", () => el.gateOverlay.classList.remove("show"));
 
-// Reward popup
+// Reward popup — "Keep Going" is the kid's "next" action, so the confetti/
+// sound/shake fire here rather than the instant the level was solved.
 el.rewardClose.addEventListener("click", () => {
   el.rewardOverlay.classList.remove("show");
+  if (pendingCelebrationTier !== null) {
+    launchConfetti(pendingCelebrationTier);
+    playCelebration(pendingCelebrationTier);
+    screenShake(pendingCelebrationTier);
+    pendingCelebrationTier = null;
+  }
   if (allDone()) requestCertificate(); // celebrate the final level with the certificate
 });
 
@@ -1937,6 +2187,8 @@ el.certPrize.addEventListener("input", () => { state.certPrize = el.certPrize.va
 
 /* ---------- Start ---------- */
 buildPalette();
+buildAvatarPicker();
+renderProfile();
 renderGrid();
 renderReward();
 goToLevel(state.current || 1);
