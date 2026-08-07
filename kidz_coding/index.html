@@ -1997,6 +1997,7 @@ function scorePrediction(firstRun, output, errMsg) {
 let challengeActive = false;
 let challengeExpected = "";
 let challengeAttempts = 0;
+let challengeLevelId = null;   // level whose points are pending on this challenge
 
 function numberVariant(code) {
   // Protect for-loop headers (bounds/step) so we never risk turning a loop
@@ -2020,24 +2021,28 @@ function numberVariant(code) {
   return varied.replace(/ (\d+) /g, (_, i) => loopHeaders[Number(i)]);
 }
 
+/* Returns true if a challenge was started (and points are now pending on it),
+   false if no fair variant could be built (caller should award directly). */
 function startChallenge(lvl) {
   const code = state.code[lvl.id] !== undefined ? state.code[lvl.id] : lvl.startingCode;
   const variantCode = numberVariant(code);
-  if (!variantCode) return; // nothing safe to vary — let them through
+  if (!variantCode) return false; // nothing safe to vary — let them through
   let variantOutput;
   try {
     variantOutput = runJava(variantCode);
   } catch (e) {
-    return; // variant doesn't run cleanly — don't block on a broken challenge
+    return false; // variant doesn't run cleanly — don't block on a broken challenge
   }
   challengeExpected = normalize(variantOutput);
   challengeAttempts = 0;
+  challengeLevelId = lvl.id;
   el.challengeCode.textContent = variantCode;
   el.challengeInput.value = "";
   el.challengeFeedback.innerHTML = "";
   el.challengeBox.classList.remove("hidden");
   challengeActive = true;
   updateNav();
+  return true;
 }
 
 function clearChallenge() {
@@ -2050,10 +2055,12 @@ function clearChallenge() {
 function checkChallenge() {
   const guess = normalize(el.challengeInput.value.trim());
   if (guess === challengeExpected) {
-    el.challengeFeedback.innerHTML = '<span class="pf-ok">🎯 Yes! Now you really understand it — onward!</span>';
+    el.challengeFeedback.innerHTML = '<span class="pf-ok">🎯 Yes! You earned it — points added!</span>';
     challengeActive = false;
     updateNav();
-    setTimeout(clearChallenge, 900);
+    // Understanding proven — now (and only now) bank the points for the level.
+    const id = challengeLevelId;
+    setTimeout(() => { if (id != null) awardCompletion(id); }, 700);
     return;
   }
   challengeAttempts++;
@@ -2071,23 +2078,45 @@ el.challengeInput.addEventListener("keydown", (e) => {
 });
 
 function markComplete(id, needsChallenge) {
+  // Getting the right output isn't enough to earn points on its own — the
+  // starting code is often already the full solution, so a kid could bank
+  // points just by pressing Run without ever reading the code. A wrong/blank
+  // first guess means they haven't proven they understand it, so we WITHHOLD
+  // the points and completion until they pass a quick-check challenge on a
+  // number-variant of their code. Points are only added once understanding
+  // is shown (correct first guess here, or a passed challenge).
+  if (needsChallenge) {
+    el.banner.classList.remove("show");
+    const note = document.createElement("div");
+    note.className = "ok";
+    note.textContent = "✓ Right output! Now pass the quick check below to earn your points.";
+    el.console.appendChild(document.createTextNode("\n"));
+    el.console.appendChild(note);
+    // If we can't build a fair challenge (nothing safe to vary), don't trap
+    // the child — award the points as they did produce the correct output.
+    if (!startChallenge(getLevel(id))) awardCompletion(id);
+    else updateNav();
+    return;
+  }
+  awardCompletion(id);
+}
+
+/* Actually banks the points/completion for a level. Called only once a child
+   has shown they understand it — either by a correct first-run guess, or by
+   passing the quick-check challenge. */
+function awardCompletion(id) {
   const already = state.completed.has(id);
   state.completed.add(id);
   saveState();
   renderGrid();
   renderReward();
+  clearChallenge();
   el.banner.classList.add("show");
   const ok = document.createElement("div");
   ok.className = "ok";
   ok.textContent = already ? "✓ Correct again! Well done." : "✓ Perfect! Level " + id + " complete!";
   el.console.appendChild(document.createTextNode("\n"));
   el.console.appendChild(ok);
-
-  // A wrong/blank first guess means they may have just copied the revealed
-  // answer instead of reading the code — make them prove it on a variant
-  // before Next unlocks, instead of letting them coast to the next level.
-  if (needsChallenge) startChallenge(getLevel(id));
-  else clearChallenge();
   updateNav();
 
   // Reward only for a brand-new completion (not for re-running a solved level)
