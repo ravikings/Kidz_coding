@@ -354,6 +354,21 @@
   @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
   .confetti i.emoji { width:auto; height:auto; background:transparent !important; font-size:28px; line-height:1; }
 
+  /* Floating "stage tune" cue — a friendly music banner that drifts in when a
+     bonus tune plays at a stage milestone. */
+  .music-cue {
+    position: fixed; left: 50%; top: 84px; transform: translate(-50%, -20px);
+    z-index: 130; pointer-events: none;
+    background: linear-gradient(135deg, #7048e8, #e64980);
+    color: #fff; font-size: 20px; font-weight: bold;
+    padding: 12px 22px; border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(112,72,232,0.4); border: 3px solid #fff;
+    opacity: 0; transition: opacity 0.45s ease, transform 0.45s ease; white-space: nowrap;
+  }
+  .music-cue.show { opacity: 1; transform: translate(-50%, 0); animation: musicBob 0.9s ease-in-out infinite alternate; }
+  @keyframes musicBob { from { transform: translate(-50%, 0) rotate(-2deg);} to { transform: translate(-50%, -6px) rotate(2deg);} }
+  @media (max-width: 600px) { .music-cue { font-size: 16px; padding: 10px 16px; top: 70px; } }
+
   /* parent money toggle */
   .reward-toggle {
     background:#fff; color:#495057; border:2px solid #ced4da; border-radius:999px;
@@ -485,7 +500,7 @@
       <span class="profile-avatar-preview" id="avatarPreview">🦊</span>
       <input id="profileName" type="text" maxlength="20" placeholder="Type your name..." />
       <div class="avatar-picker" id="avatarPicker"></div>
-      <button class="reward-toggle" id="soundToggle">🔊 Sound: On</button>
+      <button class="reward-toggle" id="soundToggle">🎵 Music: On</button>
     </div>
   </div>
 
@@ -1521,6 +1536,7 @@ const TIER_EMOJI = [
    kid clicks "Keep Going ▶" (rewardClose), so the celebration lands right as
    they move on to the next level instead of stealing attention mid-review. */
 let pendingCelebrationTier = null;
+let pendingCelebrationId = null;   // level id, so we can pick a stage tune at milestones
 function showRewardPopup(id) {
   const tier = tierOf(id);
   el.popAward.textContent = "+" + pointsForLevel(id) + " Points!";
@@ -1533,6 +1549,7 @@ function showRewardPopup(id) {
   el.popKidLine.style.display = parentMode ? "none" : "";
   el.rewardOverlay.classList.add("show");
   pendingCelebrationTier = tier;
+  pendingCelebrationId = id;
 }
 
 /* Confetti scales with tier: more pieces, more emoji, tier-colored, extra
@@ -1584,57 +1601,119 @@ function screenShake(tier) {
   setTimeout(() => document.body.classList.remove("shake"), 500);
 }
 
-/* Fanfare grows richer as tiers rise: longer rising runs, higher octave,
-   a drum-like thump and sparkle on the big ones. Web Audio, fully offline. */
+/* =========================================================================
+   MUSIC — warm, music-box-style tunes instead of the old beepy scale run.
+   Every note is a soft triangle voice (flute / xylophone feel) with a gentle
+   bell partial, so completions sound like a friendly little song. Pure Web
+   Audio — no files, fully offline.
+   ========================================================================= */
 let audioCtx = null;
+const NOTE = {
+  C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88,
+  C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.00, B5:987.77,
+  C6:1046.50, D6:1174.66, E6:1318.51, F6:1396.91, G6:1567.98, REST: 0
+};
+
+function ensureAudio() {
+  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  return audioCtx;
+}
+
+/* One soft, kid-friendly note: triangle body + a quiet sine octave sparkle,
+   with a smooth swell-and-fade so nothing sounds harsh. */
+function playNote(freq, at, dur, vol) {
+  if (!freq) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = "triangle";
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.0001, at);
+  gain.gain.exponentialRampToValueAtTime(vol, at + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(at); osc.stop(at + dur + 0.05);
+  // Gentle octave-up shimmer for a music-box glow
+  const bell = audioCtx.createOscillator();
+  const bg = audioCtx.createGain();
+  bell.type = "sine";
+  bell.frequency.value = freq * 2;
+  bg.gain.setValueAtTime(0.0001, at);
+  bg.gain.exponentialRampToValueAtTime(vol * 0.35, at + 0.015);
+  bg.gain.exponentialRampToValueAtTime(0.0001, at + dur * 0.7);
+  bell.connect(bg); bg.connect(audioCtx.destination);
+  bell.start(at); bell.stop(at + dur + 0.05);
+}
+
+/* Schedules a melody: seq is [noteName, beats] pairs. Returns total seconds. */
+function playMelody(seq, { beat = 0.16, vol = 0.2, bass = null } = {}) {
+  const start = audioCtx.currentTime + 0.04;
+  let t = start;
+  seq.forEach(([n, b]) => {
+    const dur = b * beat;
+    playNote(NOTE[n], t, Math.max(0.12, dur * 0.92), vol);
+    t += dur;
+  });
+  // Optional soft bass line under the tune for a fuller, happier sound.
+  if (bass) {
+    let bt = start;
+    bass.forEach(([n, b]) => {
+      const dur = b * beat;
+      playNote(NOTE[n] ? NOTE[n] / 2 : 0, bt, Math.max(0.12, dur * 0.9), vol * 0.5);
+      bt += dur;
+    });
+  }
+  return t - start;
+}
+
+// A short, cheerful "you did it!" jingle — do-mi-so-do with a happy lift.
+const WIN_JINGLE = [["C5",1],["E5",1],["G5",1],["C6",2],["G5",1],["C6",3]];
+// A brighter version for the tougher tiers (up an octave-ish, extra sparkle).
+const WIN_JINGLE_BIG = [["E5",1],["G5",1],["C6",1],["E6",1],["G5",1],["C6",1],["E6",3]];
+
 function playCelebration(tier) {
   if (!state.soundOn) return;
   try {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === "suspended") audioCtx.resume();
-    const now = audioCtx.currentTime;
-    // Major-scale run; more notes and a higher top note as the tier climbs.
-    const scale = [523.25, 587.33, 659.25, 698.46, 783.99, 880.0, 987.77, 1046.5, 1174.7, 1318.5, 1568.0];
-    const noteCount = Math.min(scale.length, 3 + tier);
-    const step = tier >= 7 ? 0.075 : 0.1;
-    for (let i = 0; i < noteCount; i++) {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = tier >= 8 ? "triangle" : (i === noteCount - 1 ? "triangle" : "sine");
-      osc.frequency.value = scale[i];
-      const t = now + i * step;
-      gain.gain.setValueAtTime(0.0001, t);
-      gain.gain.exponentialRampToValueAtTime(0.26, t + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.38);
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(t); osc.stop(t + 0.42);
-    }
-    // Sparkle shimmer at the end
-    const shimmer = audioCtx.createOscillator();
-    const sg = audioCtx.createGain();
-    shimmer.type = "triangle";
-    const st = now + noteCount * step;
-    shimmer.frequency.setValueAtTime(1568, st);
-    shimmer.frequency.exponentialRampToValueAtTime(1568 + tier * 180, st + 0.3);
-    sg.gain.setValueAtTime(0.0001, st);
-    sg.gain.exponentialRampToValueAtTime(0.14, st + 0.03);
-    sg.gain.exponentialRampToValueAtTime(0.0001, st + 0.55);
-    shimmer.connect(sg); sg.connect(audioCtx.destination);
-    shimmer.start(st); shimmer.stop(st + 0.6);
-    // Deep thump on the big tiers
-    if (tier >= 5) {
-      const bass = audioCtx.createOscillator();
-      const bg = audioCtx.createGain();
-      bass.type = "sine";
-      bass.frequency.setValueAtTime(160, now);
-      bass.frequency.exponentialRampToValueAtTime(60, now + 0.25);
-      bg.gain.setValueAtTime(0.0001, now);
-      bg.gain.exponentialRampToValueAtTime(0.3, now + 0.02);
-      bg.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
-      bass.connect(bg); bg.connect(audioCtx.destination);
-      bass.start(now); bass.stop(now + 0.32);
-    }
+    ensureAudio();
+    playMelody(tier >= 6 ? WIN_JINGLE_BIG : WIN_JINGLE, { beat: 0.15, vol: 0.22 });
   } catch (e) { /* audio unavailable — silent fallback */ }
+}
+
+/* A longer, bouncy happy tune with a bass line, saved for stage milestones
+   (every 10th level and each new tier) so reaching a stage feels special. */
+const STAGE_TUNE = [
+  ["G4",1],["C5",1],["E5",1],["G5",1],["E5",1],["C5",1],["D5",2],
+  ["F5",1],["A5",1],["G5",1],["E5",1],["C5",1],["D5",1],["G4",2],
+  ["G4",1],["C5",1],["E5",1],["G5",1],["A5",1],["G5",1],["E5",1],["C5",1],
+  ["G5",2],["C6",4]
+];
+const STAGE_BASS = [
+  ["C5",2],["G4",2],["F5",2],["G4",2],
+  ["C5",2],["G4",2],["F5",2],["G4",2],
+  ["C5",2],["G4",2],["C5",2],["C5",2],
+  ["G4",2],["C5",2]
+];
+function playStageTune() {
+  if (!state.soundOn) return 0;
+  try {
+    ensureAudio();
+    return playMelody(STAGE_TUNE, { beat: 0.17, vol: 0.2, bass: STAGE_BASS });
+  } catch (e) { return 0; }
+}
+
+/* A stage milestone = the end of every 10-level block. New tiers (every 100)
+   land on those boundaries too, so this covers both. */
+function isStageMilestone(id) { return id % 10 === 0; }
+
+/* Floating 🎵 cue so kids can SEE that a bonus tune is playing at a stage. */
+function showMusicCue(id) {
+  const cue = document.createElement("div");
+  cue.className = "music-cue";
+  const stage = Math.ceil(id / 10);
+  cue.innerHTML = '🎵 <b>Stage ' + stage + ' tune!</b> 🎶';
+  document.body.appendChild(cue);
+  requestAnimationFrame(() => cue.classList.add("show"));
+  setTimeout(() => { cue.classList.remove("show"); setTimeout(() => cue.remove(), 500); }, 3200);
 }
 
 /* Certificate */
@@ -1779,7 +1858,7 @@ function renderProfile() {
   el.profileName.value = state.profileName || "";
   el.avatarPreview.textContent = state.avatar || AVATARS[0];
   Array.from(el.avatarPicker.children).forEach(b => b.classList.toggle("selected", b.textContent === state.avatar));
-  el.soundToggle.textContent = state.soundOn ? "🔊 Sound: On" : "🔇 Sound: Off";
+  el.soundToggle.textContent = state.soundOn ? "🎵 Music: On" : "🔇 Music: Off";
   el.soundToggle.classList.toggle("on", state.soundOn);
 }
 el.profileName.addEventListener("input", () => {
@@ -1790,6 +1869,8 @@ el.soundToggle.addEventListener("click", () => {
   state.soundOn = !state.soundOn;
   saveState();
   renderProfile();
+  // Play a little preview so kids hear the tune the moment they turn music on.
+  if (state.soundOn) playCelebration(1);
 });
 
 /* ---------- Snippet palette ---------- */
@@ -2190,9 +2271,17 @@ el.rewardClose.addEventListener("click", () => {
   el.rewardOverlay.classList.remove("show");
   if (pendingCelebrationTier !== null) {
     launchConfetti(pendingCelebrationTier);
-    playCelebration(pendingCelebrationTier);
     screenShake(pendingCelebrationTier);
+    // At a stage milestone, play the longer bonus tune (with a visible 🎵 cue);
+    // otherwise the short win jingle.
+    if (pendingCelebrationId !== null && isStageMilestone(pendingCelebrationId)) {
+      playStageTune();
+      if (state.soundOn) showMusicCue(pendingCelebrationId);
+    } else {
+      playCelebration(pendingCelebrationTier);
+    }
     pendingCelebrationTier = null;
+    pendingCelebrationId = null;
   }
   if (allDone()) requestCertificate(); // celebrate the final level with the certificate
 });
