@@ -354,21 +354,6 @@
   @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
   .confetti i.emoji { width:auto; height:auto; background:transparent !important; font-size:28px; line-height:1; }
 
-  /* Floating "stage tune" cue — a friendly music banner that drifts in when a
-     bonus tune plays at a stage milestone. */
-  .music-cue {
-    position: fixed; left: 50%; top: 84px; transform: translate(-50%, -20px);
-    z-index: 130; pointer-events: none;
-    background: linear-gradient(135deg, #7048e8, #e64980);
-    color: #fff; font-size: 20px; font-weight: bold;
-    padding: 12px 22px; border-radius: 999px;
-    box-shadow: 0 8px 24px rgba(112,72,232,0.4); border: 3px solid #fff;
-    opacity: 0; transition: opacity 0.45s ease, transform 0.45s ease; white-space: nowrap;
-  }
-  .music-cue.show { opacity: 1; transform: translate(-50%, 0); animation: musicBob 0.9s ease-in-out infinite alternate; }
-  @keyframes musicBob { from { transform: translate(-50%, 0) rotate(-2deg);} to { transform: translate(-50%, -6px) rotate(2deg);} }
-  @media (max-width: 600px) { .music-cue { font-size: 16px; padding: 10px 16px; top: 70px; } }
-
   /* parent money toggle */
   .reward-toggle {
     background:#fff; color:#495057; border:2px solid #ced4da; border-radius:999px;
@@ -1602,16 +1587,21 @@ function screenShake(tier) {
 }
 
 /* =========================================================================
-   MUSIC — warm, music-box-style tunes instead of the old beepy scale run.
-   Every note is a soft triangle voice (flute / xylophone feel) with a gentle
-   bell partial, so completions sound like a friendly little song. Pure Web
-   Audio — no files, fully offline.
+   PARTY MUSIC — a short, upbeat dance groove kids can boogie to when they
+   win. Real music, not a beep: a four-on-the-floor kick, snare backbeat,
+   hi-hats, a bouncy bassline and a catchy melody hook over a happy
+   I–vi–IV–V (C–Am–F–G) progression. All synthesized live with Web Audio, so
+   it's free, tiny, and works with no internet at all.
    ========================================================================= */
 let audioCtx = null;
 const NOTE = {
+  // bass octaves
+  C2:65.41, D2:73.42, E2:82.41, F2:87.31, G2:98.00, A2:110.00, B2:123.47,
+  C3:130.81, D3:146.83, E3:164.81, F3:174.61, G3:196.00, A3:220.00, B3:246.94,
+  // melody octaves
   C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88,
   C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.00, B5:987.77,
-  C6:1046.50, D6:1174.66, E6:1318.51, F6:1396.91, G6:1567.98, REST: 0
+  C6:1046.50, D6:1174.66, E6:1318.51, F6:1396.91, G6:1567.98
 };
 
 function ensureAudio() {
@@ -1620,101 +1610,91 @@ function ensureAudio() {
   return audioCtx;
 }
 
-/* One soft, kid-friendly note: triangle body + a quiet sine octave sparkle,
-   with a smooth swell-and-fade so nothing sounds harsh. */
-function playNote(freq, at, dur, vol) {
+/* ---- Drum + tonal voices ---- */
+function drumKick(at) {
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = "sine";
+  o.frequency.setValueAtTime(150, at);
+  o.frequency.exponentialRampToValueAtTime(45, at + 0.12);
+  g.gain.setValueAtTime(0.9, at);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + 0.19);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(at); o.stop(at + 0.22);
+}
+function noiseBurst(at, dur, vol, hp) {
+  const n = Math.floor(audioCtx.sampleRate * dur);
+  const buf = audioCtx.createBuffer(1, n, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < n; i++) data[i] = Math.random() * 2 - 1;
+  const src = audioCtx.createBufferSource(); src.buffer = buf;
+  const flt = audioCtx.createBiquadFilter(); flt.type = "highpass"; flt.frequency.value = hp;
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(vol, at);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  src.connect(flt); flt.connect(g); g.connect(audioCtx.destination);
+  src.start(at); src.stop(at + dur);
+}
+function drumSnare(at) { noiseBurst(at, 0.16, 0.35, 1800); }
+function drumHat(at, vol) { noiseBurst(at, 0.05, vol, 8000); }
+
+/* A plucky tonal voice for bass and melody. */
+function playVoice(freq, at, dur, vol, type) {
   if (!freq) return;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = "triangle";
-  osc.frequency.value = freq;
-  gain.gain.setValueAtTime(0.0001, at);
-  gain.gain.exponentialRampToValueAtTime(vol, at + 0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, at + dur);
-  osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(at); osc.stop(at + dur + 0.05);
-  // Gentle octave-up shimmer for a music-box glow
-  const bell = audioCtx.createOscillator();
-  const bg = audioCtx.createGain();
-  bell.type = "sine";
-  bell.frequency.value = freq * 2;
-  bg.gain.setValueAtTime(0.0001, at);
-  bg.gain.exponentialRampToValueAtTime(vol * 0.35, at + 0.015);
-  bg.gain.exponentialRampToValueAtTime(0.0001, at + dur * 0.7);
-  bell.connect(bg); bg.connect(audioCtx.destination);
-  bell.start(at); bell.stop(at + dur + 0.05);
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+  o.type = type || "triangle";
+  o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, at);
+  g.gain.exponentialRampToValueAtTime(vol, at + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(at); o.stop(at + dur + 0.03);
 }
 
-/* Schedules a melody: seq is [noteName, beats] pairs. Returns total seconds. */
-function playMelody(seq, { beat = 0.16, vol = 0.2, bass = null } = {}) {
-  const start = audioCtx.currentTime + 0.04;
-  let t = start;
-  seq.forEach(([n, b]) => {
-    const dur = b * beat;
-    playNote(NOTE[n], t, Math.max(0.12, dur * 0.92), vol);
-    t += dur;
-  });
-  // Optional soft bass line under the tune for a fuller, happier sound.
-  if (bass) {
-    let bt = start;
-    bass.forEach(([n, b]) => {
-      const dur = b * beat;
-      playNote(NOTE[n] ? NOTE[n] / 2 : 0, bt, Math.max(0.12, dur * 0.9), vol * 0.5);
-      bt += dur;
-    });
-  }
-  return t - start;
-}
-
-// A short, cheerful "you did it!" jingle — do-mi-so-do with a happy lift.
-const WIN_JINGLE = [["C5",1],["E5",1],["G5",1],["C6",2],["G5",1],["C6",3]];
-// A brighter version for the tougher tiers (up an octave-ish, extra sparkle).
-const WIN_JINGLE_BIG = [["E5",1],["G5",1],["C6",1],["E6",1],["G5",1],["C6",1],["E6",3]];
-
-function playCelebration(tier) {
-  if (!state.soundOn) return;
-  try {
-    ensureAudio();
-    playMelody(tier >= 6 ? WIN_JINGLE_BIG : WIN_JINGLE, { beat: 0.15, vol: 0.22 });
-  } catch (e) { /* audio unavailable — silent fallback */ }
-}
-
-/* A longer, bouncy happy tune with a bass line, saved for stage milestones
-   (every 10th level and each new tier) so reaching a stage feels special. */
-const STAGE_TUNE = [
-  ["G4",1],["C5",1],["E5",1],["G5",1],["E5",1],["C5",1],["D5",2],
-  ["F5",1],["A5",1],["G5",1],["E5",1],["C5",1],["D5",1],["G4",2],
-  ["G4",1],["C5",1],["E5",1],["G5",1],["A5",1],["G5",1],["E5",1],["C5",1],
-  ["G5",2],["C6",4]
+// Bass root per bar (I–vi–IV–V) and a 32-step (8-per-bar) melody hook.
+const GROOVE_BASS = ["C2", "A2", "F2", "G2"];
+const GROOVE_MEL = [
+  "G5","-","E5","G5","C6","-","G5","-",   // bar 1 (C)
+  "A5","-","E5","A5","C6","-","A5","-",   // bar 2 (Am)
+  "A5","-","F5","A5","C6","-","A5","-",   // bar 3 (F)
+  "B5","-","G5","D6","B5","-","G5","-"    // bar 4 (G)
 ];
-const STAGE_BASS = [
-  ["C5",2],["G4",2],["F5",2],["G4",2],
-  ["C5",2],["G4",2],["F5",2],["G4",2],
-  ["C5",2],["G4",2],["C5",2],["C5",2],
-  ["G4",2],["C5",2]
-];
-function playStageTune() {
+
+/* Plays `bars` bars of the dance groove (loops the 4-bar pattern). ~2s/bar.
+   Returns the length in seconds. */
+function playGroove(bars) {
   if (!state.soundOn) return 0;
   try {
     ensureAudio();
-    return playMelody(STAGE_TUNE, { beat: 0.17, vol: 0.2, bass: STAGE_BASS });
+    const eighth = 0.25;                 // 120 BPM → eighth note = 0.25s
+    const start = audioCtx.currentTime + 0.06;
+    const steps = bars * 8;
+    for (let s = 0; s < steps; s++) {
+      const t = start + s * eighth;
+      const inBar = s % 8;               // 0..7 eighths within a bar
+      const barIdx = Math.floor(s / 8) % 4;
+      // Drums: four-on-the-floor kick, snare on the backbeat, hats every eighth
+      if (inBar % 2 === 0) drumKick(t);
+      if (inBar === 2 || inBar === 6) drumSnare(t);
+      drumHat(t, inBar % 2 === 1 ? 0.16 : 0.08);
+      // Bouncy "oom-pah" bass: low root on the beat, octave-up on the offbeat
+      const root = NOTE[GROOVE_BASS[barIdx]];
+      playVoice(inBar % 2 === 0 ? root : root * 2, t, eighth * 0.9, 0.24, "triangle");
+      // Catchy melody hook
+      const m = GROOVE_MEL[s % 32];
+      if (m && m !== "-") playVoice(NOTE[m], t, eighth * 1.7, 0.17, "square");
+    }
+    return steps * eighth;
   } catch (e) { return 0; }
 }
+
+// Every win gets a short dance (4 bars ≈ 8s); tougher tiers get a little more.
+function playCelebration(tier) { playGroove(tier >= 6 ? 6 : 4); }
+// Stage milestones get an extra-long party.
+function playStageTune() { return playGroove(8); }
 
 /* A stage milestone = the end of every 10-level block. New tiers (every 100)
    land on those boundaries too, so this covers both. */
 function isStageMilestone(id) { return id % 10 === 0; }
-
-/* Floating 🎵 cue so kids can SEE that a bonus tune is playing at a stage. */
-function showMusicCue(id) {
-  const cue = document.createElement("div");
-  cue.className = "music-cue";
-  const stage = Math.ceil(id / 10);
-  cue.innerHTML = '🎵 <b>Stage ' + stage + ' tune!</b> 🎶';
-  document.body.appendChild(cue);
-  requestAnimationFrame(() => cue.classList.add("show"));
-  setTimeout(() => { cue.classList.remove("show"); setTimeout(() => cue.remove(), 500); }, 3200);
-}
 
 /* Certificate */
 function openCertificate() {
@@ -2272,11 +2252,10 @@ el.rewardClose.addEventListener("click", () => {
   if (pendingCelebrationTier !== null) {
     launchConfetti(pendingCelebrationTier);
     screenShake(pendingCelebrationTier);
-    // At a stage milestone, play the longer bonus tune (with a visible 🎵 cue);
-    // otherwise the short win jingle.
+    // A stage milestone gets an extra-long dance; every other win gets the
+    // short groove.
     if (pendingCelebrationId !== null && isStageMilestone(pendingCelebrationId)) {
       playStageTune();
-      if (state.soundOn) showMusicCue(pendingCelebrationId);
     } else {
       playCelebration(pendingCelebrationTier);
     }
